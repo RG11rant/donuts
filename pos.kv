@@ -1,0 +1,293 @@
+#:kivy 1.0.9
+
+<Pos>:
+    canvas.before:
+        Rectangle:
+            pos: self.pos
+            size: self.size
+            source: 'images/background.png'
+
+    Label:
+        text: "Your Order :"
+        font_name: 'images/DK Cool Crayon.ttf'
+        font_size: 30
+        color: 1, 1, 1, 1
+        pos: 100, 650
+
+    Label:
+        id: order1S
+        text: ""
+        font_name: 'images/DK Cool Crayon.ttf'
+        font_size: 25
+        text_size: (250, None)
+        halign: 'left'
+        valign: 'middle'
+        color: 1, 1, 1, 1
+        pos: 150, 600
+
+    Label:
+        id: order1SZP
+        text: ""
+        font_name: 'images/DK Cool Crayon.ttf'
+        font_size: 25
+        text_size: (200, None)
+        halign: 'left'
+        valign: 'middle'
+        color: 1, 1, 1, 1
+        pos: 350, 600
+
+    Label:
+        id: pops1
+        text: ""
+        font_name: 'images/DK Cool Crayon.ttf'
+        font_size: 25
+        text_size: (200, None)
+        halign: 'left'
+        valign: 'middle'
+        color: 1, 1, 1, 1
+        pos: 150, 550
+
+    Label:
+        id: pop_price1
+        text: ""
+        font_name: 'images/DK Cool Crayon.ttf'
+        font_size: 25
+        text_size: (200, None)
+        halign: 'left'
+        valign: 'middle'
+        color: 1, 1, 1, 1
+        pos: 350, 550
+
+    Label:
+        id: pops2
+        text: ""
+        font_name: 'images/DK Cool Crayon.ttf'
+        font_size: 25
+        text_size: (200, None)
+        halign: 'left'
+        valign: 'middle'
+        color: 1, 1, 1, 1
+        pos: 150, 500
+
+    Label:
+        id: pop_price2
+        text: ""
+        font_name: 'images/DK Cool Crayon.ttf'
+        font_size: 25
+        text_size: (200, None)
+        halign: 'left'
+        valign: 'middle'
+        color: 1, 1, 1, 1
+        pos: 350, 500
+
+    Label:
+        id: pops3
+        text: ""
+        font_name: 'images/DK Cool Crayon.ttf'
+        font_size: 25
+        text_size: (200, None)
+        halign: 'left'
+        valign: 'middle'
+        color: 1, 1, 1, 1
+        pos: 150, 450
+
+    Label:
+        id: pop_price3
+        text: ""
+        font_name: 'images/DK Cool Crayon.ttf'
+        font_size: 25
+        text_size: (200, None)
+        halign: 'left'
+        valign: 'middle'
+        color: 1, 1, 1, 1
+        pos: 350, 450
+
+    Label:
+        id: pops4
+        text: ""
+        font_name: 'images/DK Cool Crayon.ttf'
+        font_size: 25
+        text_size: (200, None)
+        halign: 'left'
+        valign: 'middle'
+        color: 1, 1, 1, 1
+        pos: 150, 400
+
+    Label:
+        id: pop_price4
+        text: ""
+        font_name: 'images/DK Cool Crayon.ttf'
+        font_size: 25
+        text_size: (200, None)
+        halign: 'left'
+        valign: 'middle'
+        color: 1, 1, 1, 1
+        pos: 350, 400
+
+    Label:
+        text: "Total:"
+        font_name: 'images/DK Cool Crayon.ttf'
+        color: 1, 1, 1, 1
+        font_size: 50
+        text_size: (200, None)
+        halign: 'left'
+        valign: 'middle'
+        pos: 110, 190
+
+    Label:
+        text: "GST:"
+        font_name: 'images/DK Cool Crayon.ttf'
+        color: 1, 1, 1, 1
+        font_size: 30
+        text_size: (200, None)
+        halign: 'left'
+        valign: 'middle'
+        pos: 180, 240
+
+    Label:
+        id: Gst1
+        text: "$0.00"
+        font_name: 'images/DK Cool Crayon.ttf'
+        color: 1, 1, 1, 1
+        font_size: 30
+        text_size: (200, None)
+        halign: 'left'
+        valign: 'middle'
+        pos: 280, 240
+
+    Label:
+        id: Cash1
+        text: "$0.00"
+        font_name: 'images/DK Cool Crayon.ttf'
+        color: 1, 1, 1, 1
+        font_size: 50
+        text_size: (200, None)
+        halign: 'left'
+        valign: 'middle'
+        pos: 280, 190
+
+    Button:
+        id: star
+        background_normal: 'images/red-start.png'
+        background_down: 'images/red-start-d.png'
+        pos: 550, 150
+        size: 600, 400
+        on_press: root.set_num()
+        on_release: root.starts()
+
+    Button:
+        id: drink
+        background_normal: 'images/just.png'
+        background_down: 'images/just.png'
+        pos: 5500, 150
+        size: 150, 150
+        on_press: root.soup('0')
+
+    Button:
+        id: soup1
+        background_normal: 'images/donutBags1.png'
+        background_down: 'images/donutBags1.png'
+        pos: 5500, 450
+        size: 300, 300
+        on_press: root.soup('1')
+
+    Button:
+        id: soup2
+        background_normal: 'images/donutBags2.png'
+        background_down: 'images/donutBags2.png'
+        pos: 5500, 450
+        size: 300, 300
+        on_press: root.soup('2')
+
+    Button:
+        id: soup3
+        background_normal: 'images/donutBags3.png'
+        background_down: 'images/donutBags3.png'
+        pos: 5500, 450
+        size: 300, 300
+        on_press: root.soup('3')
+
+    Button:
+        id: soup4
+        background_normal: 'images/donutBags4.png'
+        background_down: 'images/donutBags4.png'
+        pos: 5500, 450
+        size: 300, 300
+        on_press: root.soup('4')
+
+    Label:
+        id: soup1L
+        text: "$4.76"
+        font_name: 'images/DK Cool Crayon.ttf'
+        color: 0, 0, 0, 1
+        font_size: 50
+        text_size: (200, None)
+        halign: 'left'
+        valign: 'middle'
+        pos: 6600, 560
+
+    Label:
+        id: soup2L
+        text: "$7.61"
+        font_name: 'images/DK Cool Crayon.ttf'
+        color: 0, 0, 0, 1
+        font_size: 50
+        text_size: (200, None)
+        halign: 'left'
+        valign: 'middle'
+        pos: 6600, 560
+
+    Button:
+        id: pop1
+        background_normal: 'images/Pepsi.png'
+        background_down: 'images/PepsiD.png'
+        pos: 500, 3000
+        size: 150, 300
+        on_press: root.pop('1')
+
+    Button:
+        id: pop2
+        background_normal: 'images/7up.png'
+        background_down: 'images/7upD.png'
+        pos: 700, 3000
+        size: 150, 300
+        on_press: root.pop('2')
+    Button:
+        id: pop3
+        background_normal: 'images/Mug.png'
+        background_down: 'images/MugD.png'
+        pos: 900, 3000
+        size: 150, 300
+        on_press: root.pop('3')
+
+    Button:
+        id: pop4
+        background_normal: 'images/Dew.png'
+        background_down: 'images/DewD.png'
+        pos: 1100, 3000
+        size: 150, 300
+        on_press: root.pop('4')
+
+    Button:
+        id: done
+        background_normal: 'images/next.png'
+        background_down: 'images/next.png'
+        pos: 550, 3000
+        size: 551, 170
+        on_release: root.pops()
+
+    Button:
+        id: pay
+        background_normal: 'images/Pay.png'
+        background_down: 'images/Pay.png'
+        pos: 550, 3000
+        size: 551, 170
+        on_press: root.pay()
+
+    Button:
+        id: new
+        background_normal: 'images/startover.png'
+        background_down: 'images/startover.png'
+        pos: 550, 3000
+        size: 150, 150
+        on_press: root.next()
