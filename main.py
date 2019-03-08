@@ -178,6 +178,7 @@ class Pos(Widget):
         self.drink_num = 1000
         self.pop_index = 0
         self.m = 0
+        self.start_time = True
         self.pop_name = [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ']
         self.num = [0, 0, 0, 0, 0]
         self.order = []
@@ -322,15 +323,19 @@ class Pos(Widget):
         self.ids.pay.pos = 550, 400
 
     def pay(self):
-        Clock.schedule_interval(self.update, 1)
+        self.m = 0
+        if self.start_time:
+            Clock.schedule_interval(self.update, 1)
+            self.start_time = False
 
     def update(self, dt):
         print(dt)
-        self.m += 1
-        if self.m > 5:
+        if self.m == 3:
             self.payed()
-            Clock.unschedule(self.update)
-            self.m = 0
+            # Clock.unschedule(self.update)
+            self.m = 6
+        elif self.m < 3:
+            self.m += 1
 
     def payed(self):
         self.ids.pay.pos = 900, 3000
