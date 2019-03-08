@@ -2,7 +2,6 @@ import sqlite3
 import socket
 import time
 import random
-# import smbus
 import math
 from escpos.printer import Network
 from kivy.app import App
