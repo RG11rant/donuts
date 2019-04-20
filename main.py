@@ -3,7 +3,7 @@ import socket
 import time
 import random
 import math
-from escpos.printer import Network
+# from escpos.printer import Network
 from kivy.app import App
 from kivy.core.window import Window
 from kivy.uix.widget import Widget
@@ -13,12 +13,12 @@ Window.size = (1280, 768)
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-host = '192.168.1.21'  # get local machine name
-port = 12345
+host = '192.168.86.56'  # get local machine name
+port = 13131
 
 try:
     print('starting host.')
-    # sock.connect((host, port))  # uncomment on raspberry pi
+    sock.connect((host, port))  # uncomment on raspberry pi
 except Exception as e:
     print(e)
 
@@ -61,6 +61,12 @@ def send_ticket(data):
     time.sleep(1)
 
 
+def read_panels():
+    data = sock.recv(1024).decode('utf-8')
+    print(data)
+
+
+'''
 def for_printer(big_list=None):
     if big_list is None:
         big_list = []
@@ -165,6 +171,7 @@ def soup_print(size):
         soup_string += '     $7.62'
     soup_string += '\n'
     return soup_string
+'''
 
 
 class Pos(Widget):
@@ -322,19 +329,17 @@ class Pos(Widget):
         self.ids.pay.pos = 550, 400
 
     def pay(self):
-        self.m = 0
+        self.m = 3
         if self.start_time:
             Clock.schedule_interval(self.update, 1)
             self.start_time = False
 
     def update(self, dt):
-        print(dt)
         if self.m == 3:
             self.payed()
-            # Clock.unschedule(self.update)
             self.m = 6
-        elif self.m < 3:
-            self.m += 1
+        if dt > 2:
+            read_panels()
 
     def payed(self):
         self.ids.pay.pos = 900, 3000
@@ -346,10 +351,19 @@ class Pos(Widget):
         self.gst = 0.00
         self.ids.Gst1.text = '$0.00'
         self.ids.Cash1.text = '$0.00'
+        print(self.order)
         # for_printer(self.order)
+        m = ''
         for x in self.order:
             data_entry(x[0], x[1], x[2], x[3], x[4])
-            print(x)
+            y = str(x)
+            y = y.strip('[]')
+            print(y)
+            m = y[0]
+        m += '\n'
+        send_ticket(str(m))
+        read_panels()
+        # send_ticket("test\n")
         self.pop_name = [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ']
         self.num = [0, 0, 0, 0, 0]
         self.pop_index = 0
