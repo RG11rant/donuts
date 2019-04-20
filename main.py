@@ -64,6 +64,7 @@ def send_ticket(data):
 def read_panels():
     data = sock.recv(1024).decode('utf-8')
     print(data)
+    # sock.detach()
 
 
 '''
@@ -338,8 +339,8 @@ class Pos(Widget):
         if self.m == 3:
             self.payed()
             self.m = 6
-        if dt > 2:
-            read_panels()
+        if dt > 3:
+            print("eek")
 
     def payed(self):
         self.ids.pay.pos = 900, 3000
@@ -351,15 +352,14 @@ class Pos(Widget):
         self.gst = 0.00
         self.ids.Gst1.text = '$0.00'
         self.ids.Cash1.text = '$0.00'
-        print(self.order)
         # for_printer(self.order)
-        m = ''
+        m = '$m'
         for x in self.order:
             data_entry(x[0], x[1], x[2], x[3], x[4])
             y = str(x)
             y = y.strip('[]')
             print(y)
-            m = y[0]
+            m += y[0]
         m += '\n'
         send_ticket(str(m))
         read_panels()
