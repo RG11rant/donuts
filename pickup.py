@@ -225,13 +225,14 @@ class Pick(Widget):
         self.ids.star.pos = 180, -3000
         self.ids.orderS.pos = 175, 600
         Clock.schedule_interval(self.update, 1)
+        robot('start it')
         print('yes')
 
     def update(self, dt):
         info = messages()
         if info:
             print(info)
-        if info == 'start':
+        if info == 'started':
             self.ids.orderS.text = 'Started.'
         if info == 'end':
             print(dt)

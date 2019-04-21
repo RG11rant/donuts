@@ -63,6 +63,10 @@ while True:
             d = x
         print(d)
         clientSocket.send(d.encode('utf-8'))
+    else:
+        print("start123")
+        db = 'started'
+        clientSocket.send(db.encode('utf-8'))
 
 c.close()
 conn.close()
