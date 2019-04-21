@@ -9,7 +9,7 @@ from kivy.core.window import Window
 from kivy.uix.widget import Widget
 from kivy.clock import Clock
 
-Window.size = (1280, 768)
+# Window.size = (1280, 768) # uncomment on windows
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
@@ -22,9 +22,9 @@ try:
 except Exception as e:
     print(e)
 
-# conn = sqlite3.connect('/home/sysop/bot/order.db')  # uncomment on raspberry pi
+conn = sqlite3.connect('/home/sysop/bot/order.db')  # uncomment on raspberry pi
 
-conn = sqlite3.connect('order.db')  # uncomment on windows
+# conn = sqlite3.connect('order.db')  # uncomment on windows
 
 c = conn.cursor()
 

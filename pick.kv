@@ -1,0 +1,269 @@
+#:kivy 1.0.9
+
+<Pick>:
+    canvas.before:
+        Rectangle:
+            pos: self.pos
+            size: self.size
+            source: 'images/wood-back.jpg'
+
+    Button:
+        id: n0
+        size_hint: 0.13, 0.23
+        background_normal: 'numbutt/num0.png'
+        pos: 180, 100
+        on_release: root.order('0')
+
+    Button:
+        id: n1
+        size_hint: 0.13, 0.23
+        background_normal: 'numbutt/num1.png'
+        pos: 60, 460
+        on_release: root.order('1')
+
+    Button:
+        id: n2
+        size_hint: 0.13, 0.23
+        background_normal: 'numbutt/num2.png'
+        pos: 180, 460
+        on_release: root.order('2')
+
+    Button:
+        id: n3
+        size_hint: 0.13, 0.23
+        background_normal: 'numbutt/num3.png'
+        pos: 300, 460
+        on_release: root.order('3')
+
+    Button:
+        id: n4
+        size_hint: 0.13, 0.23
+        background_normal: 'numbutt/num4.png'
+        pos: 60, 340
+        on_release: root.order('4')
+
+    Button:
+        id: n5
+        size_hint: 0.13, 0.23
+        background_normal: 'numbutt/num5.png'
+        pos: 180, 340
+        on_release: root.order('5')
+
+    Button:
+        id: n6
+        size_hint: 0.13, 0.23
+        background_normal: 'numbutt/num6.png'
+        pos: 300, 340
+        on_release: root.order('6')
+
+    Button:
+        id: n7
+        size_hint: 0.13, 0.23
+        background_normal: 'numbutt/num7.png'
+        pos: 60, 220
+        on_release: root.order('7')
+
+    Button:
+        id: n8
+        size_hint: 0.13, 0.23
+        background_normal: 'numbutt/num8.png'
+        pos: 180, 220
+        on_release: root.order('8')
+
+    Button:
+        id: n9
+        size_hint: 0.13, 0.23
+        background_normal: 'numbutt/num9.png'
+        pos: 300, 220
+        on_release: root.order('9')
+
+    Button:
+        id: nc
+        size_hint: 0.13, 0.23
+        background_normal: 'numbutt/numclr.png'
+        pos: 300, 100
+        on_release: root.clear_num()
+
+    Label:
+        id: number1
+        text: "XXXX"
+        font_name: 'images/DK Cool Crayon.ttf'
+        font_size: 80
+        color: 1, 1, 1, 1
+        pos: 180, 675
+
+    Button:
+        id: pop1
+        background_normal: 'images/Pepsi.png'
+        background_down: 'images/Pepsi.png'
+        pos: 500, 3000
+        size: 80, 150
+
+    Button:
+        id: pop2
+        background_normal: 'images/7up.png'
+        background_down: 'images/7up.png'
+        pos: 700, 3000
+        size: 80, 150
+
+    Button:
+        id: pop3
+        background_normal: 'images/Mug.png'
+        background_down: 'images/Mug.png'
+        pos: 900, 3000
+        size: 80, 150
+
+    Button:
+        id: pop4
+        background_normal: 'images/Dew.png'
+        background_down: 'images/Dew.png'
+        pos: 1100, 3000
+        size: 80, 150
+
+    Button:
+        id: pop11
+        background_normal: 'images/Pepsi.png'
+        background_down: 'images/Pepsi.png'
+        pos: 500, 3000
+        size: 80, 150
+
+    Button:
+        id: pop21
+        background_normal: 'images/7up.png'
+        background_down: 'images/7up.png'
+        pos: 700, 3000
+        size: 80, 150
+
+    Button:
+        id: pop31
+        background_normal: 'images/Mug.png'
+        background_down: 'images/Mug.png'
+        pos: 900, 3000
+        size: 80, 150
+
+    Button:
+        id: pop41
+        background_normal: 'images/Dew.png'
+        background_down: 'images/Dew.png'
+        pos: 1100, 3000
+        size: 80, 150
+
+    Button:
+        id: pop12
+        background_normal: 'images/Pepsi.png'
+        background_down: 'images/Pepsi.png'
+        pos: 500, 3000
+        size: 80, 150
+
+    Button:
+        id: pop22
+        background_normal: 'images/7up.png'
+        background_down: 'images/7up.png'
+        pos: 700, 3000
+        size: 80, 150
+
+    Button:
+        id: pop32
+        background_normal: 'images/Mug.png'
+        background_down: 'images/Mug.png'
+        pos: 900, 3000
+        size: 80, 150
+
+    Button:
+        id: pop42
+        background_normal: 'images/Dew.png'
+        background_down: 'images/Dew.png'
+        pos: 1100, 3000
+        size: 80, 150
+
+    Button:
+        id: pop13
+        background_normal: 'images/Pepsi.png'
+        background_down: 'images/Pepsi.png'
+        pos: 500, 3000
+        size: 80, 150
+
+    Button:
+        id: pop23
+        background_normal: 'images/7up.png'
+        background_down: 'images/7up.png'
+        pos: 700, 3000
+        size: 80, 150
+
+    Button:
+        id: pop33
+        background_normal: 'images/Mug.png'
+        background_down: 'images/Mug.png'
+        pos: 900, 3000
+        size: 80, 150
+
+    Button:
+        id: pop43
+        background_normal: 'images/Dew.png'
+        background_down: 'images/Dew.png'
+        pos: 1100, 3000
+        size: 80, 150
+
+    Button:
+        id: do1
+        background_normal: 'images/donutBags1.png'
+        background_down: 'images/donutBags1.png'
+        pos: 5500, 450
+        size: 300, 300
+
+    Button:
+        id: do2
+        background_normal: 'images/donutBags2.png'
+        background_down: 'images/donutBags2.png'
+        pos: 5500, 450
+        size: 300, 300
+
+    Button:
+        id: do3
+        background_normal: 'images/donutBags3.png'
+        background_down: 'images/donutBags3.png'
+        pos: 5500, 450
+        size: 300, 300
+
+    Button:
+        id: do4
+        background_normal: 'images/donutBags4.png'
+        background_down: 'images/donutBags4.png'
+        pos: 5500, 450
+        size: 300, 300
+
+    Label:
+        id: orderT
+        text: "Is this your order"
+        font_size: 40
+        color: 1, 1, 1, 1
+        pos: 175, 1200
+
+    Label:
+        id: orderS
+        text: "Starting your order"
+        font_size: 40
+        color: 1, 1, 1, 1
+        pos: 175, 1200
+
+    Button:
+        id: new
+        background_normal: 'images/startover.png'
+        background_down: 'images/startover.png'
+        pos: 550, 3000
+        size: 150, 150
+        on_press: root.reset_all()
+
+    Button:
+        id: star
+        background_normal: 'images/red-start.png'
+        background_down: 'images/red-start-d.png'
+        pos: 180, -3000
+        size: 300, 200
+        on_press: root.starting()
+
+    Button:
+        size_hint: 0.13, 0.23
+        background_normal: 'numbutt/numback.png'
+        pos: 360, 680
+        on_release: root.end_it()
