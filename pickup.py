@@ -23,7 +23,6 @@ drinks = ['None', 'Pepsi', 'Mountain Dew', 'Root Beer', '7 Up', 'coffee', 'decaf
 def robot(data):
     try:
         data += '\n'
-        # print(data)
         sock.send(data.encode('utf-8'))
     except Exception as ex:
         print(ex)

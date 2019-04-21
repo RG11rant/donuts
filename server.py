@@ -43,25 +43,26 @@ while True:
     data = clientSocket.recv(1024).decode('utf-8')
     if not data:
         break
-
-    x = str(data_test(data))
-    if x != 'None':
-        x = x.strip('[]')
-        x = x.strip('()')
-        x = x.replace(" ", "")
-        x = x.split(",")
-        d = '$'
-        d += 'A'
-        d += str(x[0])
-        if str(x[1]) == '0':
-            d += '1000'
+    print(len(data))
+    if len(data) == 5:
+        x = str(data_test(data))
+        if x != 'None':
+            x = x.strip('[]')
+            x = x.strip('()')
+            x = x.replace(" ", "")
+            x = x.split(",")
+            d = '$'
+            d += 'A'
+            d += str(x[0])
+            if str(x[1]) == '0':
+                d += '1000'
+            else:
+                d += str(x[1])
+            d += '#'
         else:
-            d += str(x[1])
-        d += '#'
-    else:
-        d = x
-    print(d)
-    clientSocket.send(d.encode('utf-8'))
+            d = x
+        print(d)
+        clientSocket.send(d.encode('utf-8'))
 
 c.close()
 conn.close()
