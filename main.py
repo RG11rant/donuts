@@ -5,7 +5,7 @@ import random
 import math
 # from escpos.printer import Network
 from kivy.app import App
-from kivy.core.window import Window
+# from kivy.core.window import Window
 from kivy.uix.widget import Widget
 from kivy.clock import Clock
 
@@ -13,7 +13,7 @@ from kivy.clock import Clock
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-host = '192.168.86.56'  # get local machine name
+host = '192.168.0.20'  # get local machine name
 port = 13131
 
 try:
@@ -335,12 +335,10 @@ class Pos(Widget):
             Clock.schedule_interval(self.update, 1)
             self.start_time = False
 
-    def update(self, dt):
+    def update(self, _):
         if self.m == 3:
             self.payed()
             self.m = 6
-        if dt > 3:
-            print("eek")
 
     def payed(self):
         self.ids.pay.pos = 900, 3000

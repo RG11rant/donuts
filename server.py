@@ -1,11 +1,12 @@
 import socket
 import sqlite3
+import time
 
 conn = sqlite3.connect('order.db')
 c = conn.cursor()
 serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 # get local machine name
-host = '127.0.0.1'
+host = '192.168.86.26'
 port = 12345
 # bind to the port
 serverSocket.bind((host, port))
@@ -43,7 +44,6 @@ while True:
     data = clientSocket.recv(1024).decode('utf-8')
     if not data:
         break
-    print(len(data))
     if len(data) == 5:
         x = str(data_test(data))
         if x != 'None':
@@ -66,6 +66,10 @@ while True:
     else:
         print("start123")
         db = 'started'
+        clientSocket.send(db.encode('utf-8'))
+        time.sleep(3)
+        print('end')
+        db = 'end'
         clientSocket.send(db.encode('utf-8'))
 
 c.close()

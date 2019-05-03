@@ -8,7 +8,8 @@ import time
 Window.size = (480, 800)
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-host = '127.0.0.1'  # get local machine name
+# host = '127.0.0.1'  # get local machine name
+host = '192.168.0.11'
 port = 12345
 
 try:
