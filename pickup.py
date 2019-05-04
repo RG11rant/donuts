@@ -1,3 +1,5 @@
+import errno
+import sys
 from kivy.app import App
 from kivy.core.window import Window
 from kivy.uix.widget import Widget
@@ -7,13 +9,22 @@ import time
 
 Window.size = (480, 800)
 
-sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-# host = '127.0.0.1'  # get local machine name
-host = '192.168.0.11'
+client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+host = '127.0.0.1'  # get local machine name
+# host = '192.168.0.11'
 port = 12345
 
+HEADER_LENGTH = 10
+window_id = "win1"
+
 try:
-    sock.connect((host, port))
+    print("test")
+    client_socket.connect((host, port))
+    client_socket.setblocking(False)
+
+    username = window_id.encode('utf-8')
+    username_header = f"{len(username):<{HEADER_LENGTH}}".encode('utf-8')
+    client_socket.send(username_header + username)
 except Exception as e:
     print(e)
 
@@ -22,22 +33,48 @@ drinks = ['None', 'Pepsi', 'Mountain Dew', 'Root Beer', '7 Up', 'coffee', 'decaf
 
 
 def robot(data):
+
+    message = data.encode('utf-8')
+    message_header = f"{len(message):<{HEADER_LENGTH}}".encode('utf-8')
+    client_socket.send(message_header + message)
+    '''
     try:
         data += '\n'
-        sock.send(data.encode('utf-8'))
+        client_socket.send(data.encode('utf-8'))
     except Exception as ex:
         print(ex)
     time.sleep(1)
+    '''
 
 
 def messages():
     try:
-        sock.settimeout(.1)
-        bill = sock.recv(1024)
-        return bill.decode('utf-8')
-    except Exception as ex:
-        if ex == 'timed out':
-            return 'waiting'
+
+        print('start rev')
+        window_header = client_socket.recv(HEADER_LENGTH)
+        print(window_header)
+        if not len(window_header):
+            print('Connection closed by the server')
+            sys.exit()
+
+        username_length = int(username_header.decode('utf-8').strip())
+        username1 = client_socket.recv(username_length).decode('utf-8')
+
+        message_header = client_socket.recv(HEADER_LENGTH)
+        message_length = int(message_header.decode('utf-8').strip())
+        message = client_socket.recv(message_length).decode('utf-8')
+        print(f'{username1} > {message}')
+        return message
+
+    except IOError as et:
+        if et.errno != errno.EAGAIN and et.errno != errno.EWOULDBLOCK:
+            print('Reading error: {}'.format(str(et)))
+            sys.exit()
+
+    except Exception as em:
+        # Any other exception - something happened, exit
+        print('Reading error: '.format(str(em)))
+        sys.exit()
 
 
 class Pick(Widget):
@@ -57,26 +94,23 @@ class Pick(Widget):
         if len(self.numberT) >= 4:
             test1 = self.numberT
             robot(test1)
+            time.sleep(1)
             test = messages()
             print(test)
-            if test1 == '0389':
-                print('starting')
             if test1 == '0000':
                 App.get_running_app().stop()
-            if test1 == '0338':
-                print("more")
-                self.more = True
-            if test != "None":
+
+            if test != 'None':
                 self.numberT = test
                 self.look_at()
+
             else:
-                if not self.more:
-                    self.numberT = ''
-                    self.ids.number1.text = self.numberT
+                self.numberT = ''
+                self.ids.number1.text = self.numberT
 
     def end_it(self):
         print(self.nums)
-        sock.close()
+        client_socket.close()
         App.get_running_app().stop()
 
     def clear_num(self):

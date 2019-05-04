@@ -3,7 +3,7 @@ import socket
 import time
 import random
 import math
-# from escpos.printer import Network
+from escpos.printer import Network
 from kivy.app import App
 # from kivy.core.window import Window
 from kivy.uix.widget import Widget
@@ -13,7 +13,7 @@ from kivy.clock import Clock
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-host = '192.168.0.20'  # get local machine name
+host = '192.168.1.20'  # get local machine name
 port = 13131
 
 try:
@@ -53,7 +53,7 @@ def data_test():
             print('looking....')
 
 
-def send_ticket(data):
+def donut_que(data):
     try:
         sock.send(data.encode('utf-8'))
     except Exception as ex:
@@ -65,6 +65,15 @@ def read_panels():
     data = sock.recv(1024).decode('utf-8')
     print(data)
     # sock.detach()
+
+
+def test_print(bill):
+    epson = Network("192.168.1.100")
+    epson.image("rosie.png")
+    epson.set(font='a', height=3, width=3, align='center')
+    epson.text(str(bill) + '\n')
+    epson.qr('hiddenempire.ca', size=8)
+    epson.cut()
 
 
 '''
@@ -253,6 +262,7 @@ class Pos(Widget):
         self.ids.soup2.pos = 5500, 170
         self.ids.soup3.pos = 5500, 20
         self.ids.drink.pos = 1100, 3000
+        # move in the pop.
         self.ids.pop1.pos = 500, 300
         self.ids.pop2.pos = 700, 300
         self.ids.pop3.pos = 900, 300
@@ -350,18 +360,20 @@ class Pos(Widget):
         self.gst = 0.00
         self.ids.Gst1.text = '$0.00'
         self.ids.Cash1.text = '$0.00'
-        # for_printer(self.order)
         m = '$m'
+        n = 1
         for x in self.order:
             data_entry(x[0], x[1], x[2], x[3], x[4])
+            n = x[3]
             y = str(x)
             y = y.strip('[]')
             print(y)
             m += y[0]
+            print(n)
         m += '\n'
-        send_ticket(str(m))
-        read_panels()
-        # send_ticket("test\n")
+        donut_que(str(m))
+        test_print(n)
+        # read_panels()
         self.pop_name = [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ']
         self.num = [0, 0, 0, 0, 0]
         self.pop_index = 0
