@@ -146,43 +146,43 @@ class Pick(Widget):
             self.pops += '4'
         if len(self.pops) > 0:
             # pop number 1
-            if self.pops[0] == '1':
-                self.ids.pop1.pos = 50, 200
-            if self.pops[0] == '2':
-                self.ids.pop2.pos = 50, 200
-            if self.pops[0] == '3':
-                self.ids.pop3.pos = 50, 200
             if self.pops[0] == '4':
+                self.ids.pop1.pos = 50, 200
+            if self.pops[0] == '3':
+                self.ids.pop2.pos = 50, 200
+            if self.pops[0] == '2':
+                self.ids.pop3.pos = 50, 200
+            if self.pops[0] == '1':
                 self.ids.pop4.pos = 50, 200
         if len(self.pops) > 1:
             # pop number 2
-            if self.pops[1] == '1':
-                self.ids.pop11.pos = 150, 200
-            if self.pops[1] == '2':
-                self.ids.pop21.pos = 150, 200
-            if self.pops[1] == '3':
-                self.ids.pop31.pos = 150, 200
             if self.pops[1] == '4':
+                self.ids.pop11.pos = 150, 200
+            if self.pops[1] == '3':
+                self.ids.pop21.pos = 150, 200
+            if self.pops[1] == '2':
+                self.ids.pop31.pos = 150, 200
+            if self.pops[1] == '1':
                 self.ids.pop41.pos = 150, 200
         if len(self.pops) > 2:
             # pop number 3
-            if self.pops[2] == '1':
-                self.ids.pop12.pos = 250, 200
-            if self.pops[2] == '2':
-                self.ids.pop22.pos = 250, 200
-            if self.pops[2] == '3':
-                self.ids.pop32.pos = 250, 200
             if self.pops[2] == '4':
+                self.ids.pop12.pos = 250, 200
+            if self.pops[2] == '3':
+                self.ids.pop22.pos = 250, 200
+            if self.pops[2] == '2':
+                self.ids.pop32.pos = 250, 200
+            if self.pops[2] == '1':
                 self.ids.pop42.pos = 250, 200
         if len(self.pops) > 3:
             # pop number 3
-            if self.pops[3] == '1':
-                self.ids.pop13.pos = 350, 200
-            if self.pops[3] == '2':
-                self.ids.pop23.pos = 350, 200
-            if self.pops[3] == '3':
-                self.ids.pop33.pos = 350, 200
             if self.pops[3] == '4':
+                self.ids.pop13.pos = 350, 200
+            if self.pops[3] == '3':
+                self.ids.pop23.pos = 350, 200
+            if self.pops[3] == '2':
+                self.ids.pop33.pos = 350, 200
+            if self.pops[3] == '1':
                 self.ids.pop43.pos = 350, 200
 
     def reset_all(self):
