@@ -22,7 +22,7 @@ try:
 except Exception as e:
     print(e)
 
-conn = sqlite3.connect('/home/sysop/bot/order.db')  # uncomment on raspberry pi
+conn = sqlite3.connect('/home/sysop/pos/order.db')  # uncomment on raspberry pi
 
 # conn = sqlite3.connect('order.db')  # uncomment on windows
 

@@ -10,21 +10,22 @@ import time
 Window.size = (480, 800)
 
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-host = '127.0.0.1'  # get local machine name
-# host = '192.168.0.11'
+# host = '127.0.0.1'  # get local machine name
+host = '192.168.1.10'
 port = 12345
 
 HEADER_LENGTH = 10
 window_id = "win1"
 
 try:
-    print("test")
     client_socket.connect((host, port))
     client_socket.setblocking(False)
 
     username = window_id.encode('utf-8')
-    username_header = f"{len(username):<{HEADER_LENGTH}}".encode('utf-8')
+    username_header = '{:10}'.format(len(username)).encode('utf-8')
+    # username_header = f"{len(username):<{HEADER_LENGTH}}".encode('utf-8')
     client_socket.send(username_header + username)
+    print("connected")
 except Exception as e:
     print(e)
 
@@ -35,22 +36,13 @@ drinks = ['None', 'Pepsi', 'Mountain Dew', 'Root Beer', '7 Up', 'coffee', 'decaf
 def robot(data):
 
     message = data.encode('utf-8')
-    message_header = f"{len(message):<{HEADER_LENGTH}}".encode('utf-8')
+    message_header = '{:10}'.format(len(message)).encode('utf-8')
+    # message_header = f"{len(message):<{HEADER_LENGTH}}".encode('utf-8')
     client_socket.send(message_header + message)
-    '''
-    try:
-        data += '\n'
-        client_socket.send(data.encode('utf-8'))
-    except Exception as ex:
-        print(ex)
-    time.sleep(1)
-    '''
 
 
 def messages():
     try:
-
-        print('start rev')
         window_header = client_socket.recv(HEADER_LENGTH)
         print(window_header)
         if not len(window_header):
@@ -63,7 +55,6 @@ def messages():
         message_header = client_socket.recv(HEADER_LENGTH)
         message_length = int(message_header.decode('utf-8').strip())
         message = client_socket.recv(message_length).decode('utf-8')
-        print(f'{username1} > {message}')
         return message
 
     except IOError as et:
@@ -260,7 +251,7 @@ class Pick(Widget):
         self.ids.star.pos = 180, -3000
         self.ids.orderS.pos = 175, 600
         Clock.schedule_interval(self.update, 1)
-        robot('start it')
+        robot('start')
         print('yes')
 
     def update(self, dt):

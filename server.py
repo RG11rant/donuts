@@ -1,6 +1,5 @@
 import socket
 import sqlite3
-import time
 import select
 
 conn = sqlite3.connect('order.db')
@@ -8,8 +7,8 @@ c = conn.cursor()
 
 HEADERSIZE = 10
 
-# host = '192.168.1.6'
-host = '127.0.0.1'  # get local machine name
+host = '192.168.1.10'
+# host = '127.0.0.1'  # get local machine name
 port = 12345
 
 serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -22,7 +21,7 @@ sockets_list = [serverSocket]
 
 clients = {}
 
-print(f'Listening for connections on {host}:{port}...')
+print('Listening for connections on {}:{}...'.format(host, port))
 
 sizes = ['None', 'donut', 'donuts']
 drinks = ['None', 'Pepsi', 'Mountain Dew', 'Root Beer', '7 Up', 'coffee', 'decaff']
@@ -85,8 +84,7 @@ while True:
             # Also save username and username header
             clients[client_socket] = user
 
-            print('Accepted new connection from {}:{}, username: {}'.format(*client_address,
-                                                                            user['data'].decode('utf-8')))
+            print('Accepted connection from {}, username: {}'.format(client_address, user['data'].decode('utf-8')))
         else:
             # Receive message
             message = receive_message(notified_socket)
@@ -106,7 +104,7 @@ while True:
             # Get user by notified socket, so we will know who sent the message
             user = clients[notified_socket]
 
-            print(f'Received message from {user["data"].decode("utf-8")}: {message["data"].decode("utf-8")}')
+            print('Received message from {}: {}'.format(user["data"].decode("utf-8"), message["data"].decode("utf-8")))
             data = message["data"].decode("utf-8")
             if len(data) == 4:
                 x = str(data_test(data))
@@ -125,20 +123,23 @@ while True:
                         d += '#'
                 else:
                     d = x
-                print(d)
                 message2 = d
-                message2_header = f"{len(message2):<{HEADERSIZE}}"
+                message2_header = '{:10}'.format(len(message2))
+                message['header'] = message2_header.encode("utf-8")
+                message['data'] = message2.encode("utf-8")
+            else:
+                print("started")
+                db = 'end'
+                message2 = db
+                message2_header = '{:10}'.format(len(message2))
                 message['header'] = message2_header.encode("utf-8")
                 message['data'] = message2.encode("utf-8")
 
             # Iterate over connected clients and broadcast message
             for client_socket in clients:
-                # But don't sent it to sender
+                # sent it to sender
                 if client_socket == notified_socket:
                     print(user['header'] + user['data'] + message['header'] + message['data'])
-                    # Send user and message (both with their headers)
-                    # We are reusing here message header sent by sender, and saved username
-                    # header send by user when he connected
                     client_socket.send(user['header'] + user['data'] + message['header'] + message['data'])
 
     # It's not really necessary to have this, but will handle some socket exceptions just in case
@@ -149,40 +150,3 @@ while True:
 
         # Remove from our list of users
         del clients[notified_socket]
-
-
-    # old stuff
-#     data = clientSocket.recv(1024).decode('utf-8')
-#     if not data:
-#        break
-#     if len(data) == 5:
-#         x = str(data_test(data))
-#         if x != 'None':
-#             x = x.strip('[]')
-#             x = x.strip('()')
-#             x = x.replace(" ", "")
-#             x = x.split(",")
-#             d = '$'
-#             d += 'A'
-#             d += str(x[0])
-#             if str(x[1]) == '0':
-#                 d += '1000'
-#             else:
-#                 d += str(x[1])
-#             d += '#'
-#         else:
-#             d = x
-#         print(d)
-#         clientSocket.send(d.encode('utf-8'))
-#     else:
-#         print("start123")
-#         db = 'started'
-#         clientSocket.send(db.encode('utf-8'))
-#         time.sleep(3)
-#         print('end')
-#         db = 'end'
-#         clientSocket.send(db.encode('utf-8'))
-#
-# c.close()
-# conn.close()
-# clientSocket.close()
