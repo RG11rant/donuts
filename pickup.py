@@ -11,11 +11,11 @@ Window.size = (480, 800)
 
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 # host = '127.0.0.1'  # get local machine name
-host = '192.168.1.10'
+host = '192.168.86.26'
 port = 12345
 
 HEADER_LENGTH = 10
-window_id = "win1"
+window_id = "w1"
 
 try:
     client_socket.connect((host, port))
@@ -23,7 +23,6 @@ try:
 
     username = window_id.encode('utf-8')
     username_header = '{:10}'.format(len(username)).encode('utf-8')
-    # username_header = f"{len(username):<{HEADER_LENGTH}}".encode('utf-8')
     client_socket.send(username_header + username)
     print("connected")
 except Exception as e:
@@ -51,6 +50,7 @@ def messages():
 
         username_length = int(username_header.decode('utf-8').strip())
         username1 = client_socket.recv(username_length).decode('utf-8')
+        print(username1)
 
         message_header = client_socket.recv(HEADER_LENGTH)
         message_length = int(message_header.decode('utf-8').strip())

@@ -61,19 +61,24 @@ def donut_que(data):
     time.sleep(1)
 
 
-def read_panels():
-    data = sock.recv(1024).decode('utf-8')
-    print(data)
-    # sock.detach()
-
-
-def test_print(bill):
-    epson = Network("192.168.1.100")
-    epson.image("rosie.png")
-    epson.set(font='a', height=3, width=3, align='center')
-    epson.text(str(bill) + '\n')
-    epson.qr('hiddenempire.ca', size=8)
-    epson.cut()
+def pos_print(order=None):
+    if order is None:
+        order = []
+    try:
+        epson = Network("192.168.1.100")
+        epson.image("rosie.png")
+        epson.set(font='a', height=3, width=3, align='center')
+        for m in order:
+            epson.text(str(m[3]) + '\n')
+            epson.set(font='a', height=1, width=1, align='left', text_type='u2')
+            epson.text('Order 1 \n')
+            epson.set(text_type='normal')
+            epson.text(str(m[0]))
+            epson.text(' Cups \n')
+        epson.qr('hiddenempire.ca', size=8)
+        epson.cut()
+    except Exception as ex:
+        print(ex)
 
 
 '''
@@ -372,8 +377,7 @@ class Pos(Widget):
             print(n)
         m += '\n'
         donut_que(str(m))
-        test_print(n)
-        # read_panels()
+        pos_print(self.order)
         self.pop_name = [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ']
         self.num = [0, 0, 0, 0, 0]
         self.pop_index = 0
@@ -390,6 +394,7 @@ class Pos(Widget):
         self.pop_index = 0
         self.drink_num = 1000
         self.clear_it()
+        App.get_running_app().stop()
         self.ids.star.pos = 550, 150
 
 
