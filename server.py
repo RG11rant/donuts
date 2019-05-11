@@ -86,9 +86,9 @@ def order_process(order):
             else:
                 dm += str(xa[1])
                 dm += '#'
-            return dm
-    else:
-        return 'None'
+        else:
+            dm = xa
+        return dm
 
 
 create_table()
@@ -155,6 +155,9 @@ while True:
                         message['data'] = data.encode("utf-8")
                         send_to_bot = True
                         send_to_w1 = True
+
+            if user["data"] == 'm1'.encode("utf-8"):
+                print('hi bot')
 
             # Iterate over connected clients and broadcast message
             for client_socket in clients:

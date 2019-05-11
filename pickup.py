@@ -43,7 +43,6 @@ def robot(data):
 def messages():
     try:
         window_header = client_socket.recv(HEADER_LENGTH)
-        print(window_header)
         if not len(window_header):
             print('Connection closed by the server')
             sys.exit()
@@ -80,8 +79,11 @@ class Pick(Widget):
         self.data2 = ''
 
     def order(self, num):
-        self.numberT += num
-        self.ids.number1.text = self.numberT
+        if len(self.numberT) <= 3:
+            self.numberT += num
+            self.ids.number1.text = self.numberT
+
+    def enter_num(self):
         if len(self.numberT) >= 4:
             test1 = self.numberT
             robot(test1)
@@ -97,7 +99,7 @@ class Pick(Widget):
 
             else:
                 self.numberT = ''
-                self.ids.number1.text = self.numberT
+                self.ids.number1.text = 'XXXX'
 
     def end_it(self):
         print(self.nums)
@@ -108,7 +110,7 @@ class Pick(Widget):
         self.numberT = ''
         self.data = ''
         self.pops = ''
-        self.ids.number1.text = self.numberT
+        self.ids.number1.text = 'XXXX'
 
     def look_at(self):
         self.ids.n0.pos = 60, 1460
@@ -122,6 +124,8 @@ class Pick(Widget):
         self.ids.n8.pos = 60, 1460
         self.ids.n9.pos = 60, 1460
         self.ids.nc.pos = 60, 1460
+        self.ids.n_back.pos = 60, 1460
+        self.ids.ent.pos = 60, 1460
         self.ids.new.pos = 10, 0
         self.ids.orderT.pos = 175, 120
         self.ids.star.pos = 170, -30
@@ -147,43 +151,43 @@ class Pick(Widget):
         if len(self.pops) > 0:
             # pop number 1
             if self.pops[0] == '4':
-                self.ids.pop1.pos = 50, 200
+                self.ids.pop1.pos = 150, 200
             if self.pops[0] == '3':
-                self.ids.pop2.pos = 50, 200
+                self.ids.pop2.pos = 150, 200
             if self.pops[0] == '2':
-                self.ids.pop3.pos = 50, 200
+                self.ids.pop3.pos = 150, 200
             if self.pops[0] == '1':
-                self.ids.pop4.pos = 50, 200
+                self.ids.pop4.pos = 150, 200
         if len(self.pops) > 1:
             # pop number 2
             if self.pops[1] == '4':
-                self.ids.pop11.pos = 150, 200
+                self.ids.pop11.pos = 250, 200
             if self.pops[1] == '3':
-                self.ids.pop21.pos = 150, 200
+                self.ids.pop21.pos = 250, 200
             if self.pops[1] == '2':
-                self.ids.pop31.pos = 150, 200
+                self.ids.pop31.pos = 250, 200
             if self.pops[1] == '1':
-                self.ids.pop41.pos = 150, 200
+                self.ids.pop41.pos = 250, 200
         if len(self.pops) > 2:
             # pop number 3
             if self.pops[2] == '4':
-                self.ids.pop12.pos = 250, 200
+                self.ids.pop12.pos = 350, 200
             if self.pops[2] == '3':
-                self.ids.pop22.pos = 250, 200
+                self.ids.pop22.pos = 350, 200
             if self.pops[2] == '2':
-                self.ids.pop32.pos = 250, 200
+                self.ids.pop32.pos = 350, 200
             if self.pops[2] == '1':
-                self.ids.pop42.pos = 250, 200
+                self.ids.pop42.pos = 350, 200
         if len(self.pops) > 3:
             # pop number 3
             if self.pops[3] == '4':
-                self.ids.pop13.pos = 350, 200
+                self.ids.pop13.pos = 50, 200
             if self.pops[3] == '3':
-                self.ids.pop23.pos = 350, 200
+                self.ids.pop23.pos = 50, 200
             if self.pops[3] == '2':
-                self.ids.pop33.pos = 350, 200
+                self.ids.pop33.pos = 50, 200
             if self.pops[3] == '1':
-                self.ids.pop43.pos = 350, 200
+                self.ids.pop43.pos = 50, 200
 
     def reset_all(self):
         # move out
@@ -212,7 +216,7 @@ class Pick(Widget):
         self.ids.star.pos = 180, -3000
         self.ids.orderS.pos = 175, 6000
         # move in
-        self.ids.n0.pos = 180, 100
+        self.ids.n0.pos = 155, 75
         self.ids.n1.pos = 60, 460
         self.ids.n2.pos = 180, 460
         self.ids.n3.pos = 300, 460
@@ -223,6 +227,8 @@ class Pick(Widget):
         self.ids.n8.pos = 180, 220
         self.ids.n9.pos = 300, 220
         self.ids.nc.pos = 300, 100
+        self.ids.n_back.pos = 60, 100
+        self.ids.ent.pos = 110, 580
         self.clear_num()
 
     def starting(self):
@@ -254,14 +260,11 @@ class Pick(Widget):
         robot('start')
         print('yes')
 
-    def update(self, dt):
+    def update(self, _):
         info = messages()
-        if info:
-            print(info)
         if info == 'started':
             self.ids.orderS.text = 'Started.'
         if info == 'end':
-            print(dt)
             Clock.unschedule(self.update)
             self.reset_all()
 

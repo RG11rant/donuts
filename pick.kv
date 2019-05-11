@@ -9,85 +9,92 @@
 
     Button:
         id: n0
-        size_hint: 0.13, 0.23
-        background_normal: 'numbutt/num0.png'
-        pos: 180, 100
+        background_normal: 'numbutt/caps0.png'
+        pos: 155, 35
+        size: 150, 150
         on_release: root.order('0')
 
     Button:
         id: n1
-        size_hint: 0.13, 0.23
-        background_normal: 'numbutt/num1.png'
-        pos: 60, 460
+        background_normal: 'numbutt/caps1.png'
+        pos: 10, 435
+        size: 150, 150
         on_release: root.order('1')
 
     Button:
         id: n2
-        size_hint: 0.13, 0.23
-        background_normal: 'numbutt/num2.png'
-        pos: 180, 460
+        background_normal: 'numbutt/caps2.png'
+        pos: 155, 435
+        size: 150, 150
         on_release: root.order('2')
 
     Button:
         id: n3
-        size_hint: 0.13, 0.23
-        background_normal: 'numbutt/num3.png'
-        pos: 300, 460
+        background_normal: 'numbutt/caps3.png'
+        pos: 300, 435
+        size: 150, 150
         on_release: root.order('3')
 
     Button:
         id: n4
-        size_hint: 0.13, 0.23
-        background_normal: 'numbutt/num4.png'
-        pos: 60, 340
+        background_normal: 'numbutt/caps4.png'
+        pos: 10, 300
+        size: 150, 150
         on_release: root.order('4')
 
     Button:
         id: n5
-        size_hint: 0.13, 0.23
-        background_normal: 'numbutt/num5.png'
-        pos: 180, 340
+        background_normal: 'numbutt/caps5.png'
+        pos: 155, 300
+        size: 150, 150
         on_release: root.order('5')
 
     Button:
         id: n6
-        size_hint: 0.13, 0.23
-        background_normal: 'numbutt/num6.png'
-        pos: 300, 340
+        background_normal: 'numbutt/caps6.png'
+        pos: 300, 300
+        size: 150, 150
         on_release: root.order('6')
 
     Button:
         id: n7
-        size_hint: 0.13, 0.23
-        background_normal: 'numbutt/num7.png'
-        pos: 60, 220
+        background_normal: 'numbutt/caps7.png'
+        pos: 10, 170
+        size: 150, 150
         on_release: root.order('7')
 
     Button:
         id: n8
-        size_hint: 0.13, 0.23
-        background_normal: 'numbutt/num8.png'
-        pos: 180, 220
+        background_normal: 'numbutt/caps8.png'
+        pos: 155, 170
+        size: 150, 150
         on_release: root.order('8')
 
     Button:
         id: n9
-        size_hint: 0.13, 0.23
-        background_normal: 'numbutt/num9.png'
-        pos: 300, 220
+        background_normal: 'numbutt/caps9.png'
+        pos: 300, 170
+        size: 150, 150
         on_release: root.order('9')
 
     Button:
         id: nc
-        size_hint: 0.13, 0.23
         background_normal: 'numbutt/numclr.png'
-        pos: 300, 100
+        background_down: 'images/Pepsi.png'
+        pos: 325, 60
         on_release: root.clear_num()
+
+    Button:
+        id: ent
+        background_normal: 'numbutt/enter.jpg'
+        pos: 110, 580
+        size: 250, 100
+        on_release: root.enter_num()
 
     Label:
         id: number1
         text: "XXXX"
-        font_name: 'images/DK Cool Crayon.ttf'
+        font_name: 'numbutt/AtomicAge-Regular.ttf'
         font_size: 80
         color: 1, 1, 1, 1
         pos: 180, 675
@@ -234,6 +241,7 @@
 
     Label:
         id: orderT
+        font_name: 'numbutt/AtomicAge-Regular.ttf'
         text: "Is this your order"
         font_size: 40
         color: 1, 1, 1, 1
@@ -241,6 +249,7 @@
 
     Label:
         id: orderS
+        font_name: 'numbutt/AtomicAge-Regular.ttf'
         text: "Starting your order"
         font_size: 40
         color: 1, 1, 1, 1
@@ -263,7 +272,7 @@
         on_press: root.starting()
 
     Button:
-        size_hint: 0.13, 0.23
+        id: n_back
         background_normal: 'numbutt/numback.png'
-        pos: 360, 680
+        pos: 35, 60
         on_release: root.end_it()
