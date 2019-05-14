@@ -4,6 +4,7 @@ from kivy.app import App
 from kivy.core.window import Window
 from kivy.uix.widget import Widget
 from kivy.clock import Clock
+from kivy.core.audio import SoundLoader
 import socket
 import time
 
@@ -12,6 +13,7 @@ Window.size = (480, 800)
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 # host = '127.0.0.1'  # get local machine name
 host = '192.168.86.26'
+# host = '192.168.1.10'
 port = 12345
 
 HEADER_LENGTH = 10
@@ -77,13 +79,19 @@ class Pick(Widget):
         self.data = ''
         self.pops = ''
         self.data2 = ''
+        self.click = SoundLoader.load('click.wav')
 
     def order(self, num):
+
         if len(self.numberT) <= 3:
             self.numberT += num
             self.ids.number1.text = self.numberT
 
+            if self.click:
+                self.click.play()
+
     def enter_num(self):
+
         if len(self.numberT) >= 4:
             test1 = self.numberT
             robot(test1)
@@ -216,18 +224,18 @@ class Pick(Widget):
         self.ids.star.pos = 180, -3000
         self.ids.orderS.pos = 175, 6000
         # move in
-        self.ids.n0.pos = 155, 75
-        self.ids.n1.pos = 60, 460
-        self.ids.n2.pos = 180, 460
-        self.ids.n3.pos = 300, 460
-        self.ids.n4.pos = 60, 340
-        self.ids.n5.pos = 180, 340
-        self.ids.n6.pos = 300, 340
-        self.ids.n7.pos = 60, 220
-        self.ids.n8.pos = 180, 220
-        self.ids.n9.pos = 300, 220
-        self.ids.nc.pos = 300, 100
-        self.ids.n_back.pos = 60, 100
+        self.ids.n0.pos = 155, 35
+        self.ids.n1.pos = 10, 435
+        self.ids.n2.pos = 155, 435
+        self.ids.n3.pos = 300, 435
+        self.ids.n4.pos = 10, 300
+        self.ids.n5.pos = 155, 300
+        self.ids.n6.pos = 300, 300
+        self.ids.n7.pos = 10, 170
+        self.ids.n8.pos = 155, 170
+        self.ids.n9.pos = 300, 170
+        self.ids.nc.pos = 325, 60
+        self.ids.n_back.pos = 35, 60
         self.ids.ent.pos = 110, 580
         self.clear_num()
 

@@ -8,6 +8,7 @@ c = conn.cursor()
 HEADERSIZE = 10
 
 host = '192.168.86.26'
+# host = '192.168.1.10'
 # host = '127.0.0.1'  # get local machine name
 port = 12345
 
@@ -15,11 +16,13 @@ bot = '192.168.86.177'
 win1 = '192.168.86.26'
 win2 = '192.168.86.11'
 
+# bot = '192.168.1.20'
+# win1 = '192.168.1.11'
+# win2 = '192.168.1.12'
+
 send_to_bot = False
 send_to_w1 = False
 send_to_w2 = False
-
-step = 0
 
 bot_data = ''
 
