@@ -10,6 +10,7 @@
     Button:
         id: n0
         background_normal: 'numbutt/caps0.png'
+        background_down: 'numbutt/backer.png'
         pos: 155, 35
         size: 150, 150
         on_release: root.order('0')
@@ -17,6 +18,7 @@
     Button:
         id: n1
         background_normal: 'numbutt/caps1.png'
+        background_down: 'numbutt/backer.png'
         pos: 10, 435
         size: 150, 150
         on_release: root.order('1')
@@ -24,6 +26,7 @@
     Button:
         id: n2
         background_normal: 'numbutt/caps2.png'
+        background_down: 'numbutt/backer.png'
         pos: 155, 435
         size: 150, 150
         on_release: root.order('2')
@@ -31,6 +34,7 @@
     Button:
         id: n3
         background_normal: 'numbutt/caps3.png'
+        background_down: 'numbutt/backer.png'
         pos: 300, 435
         size: 150, 150
         on_release: root.order('3')
@@ -38,6 +42,7 @@
     Button:
         id: n4
         background_normal: 'numbutt/caps4.png'
+        background_down: 'numbutt/backer.png'
         pos: 10, 300
         size: 150, 150
         on_release: root.order('4')
@@ -45,6 +50,7 @@
     Button:
         id: n5
         background_normal: 'numbutt/caps5.png'
+        background_down: 'numbutt/backer.png'
         pos: 155, 300
         size: 150, 150
         on_release: root.order('5')
@@ -52,6 +58,7 @@
     Button:
         id: n6
         background_normal: 'numbutt/caps6.png'
+        background_down: 'numbutt/backer.png'
         pos: 300, 300
         size: 150, 150
         on_release: root.order('6')
@@ -59,6 +66,7 @@
     Button:
         id: n7
         background_normal: 'numbutt/caps7.png'
+        background_down: 'numbutt/backer.png'
         pos: 10, 170
         size: 150, 150
         on_release: root.order('7')
@@ -66,6 +74,7 @@
     Button:
         id: n8
         background_normal: 'numbutt/caps8.png'
+        background_down: 'numbutt/backer.png'
         pos: 155, 170
         size: 150, 150
         on_release: root.order('8')
@@ -73,6 +82,7 @@
     Button:
         id: n9
         background_normal: 'numbutt/caps9.png'
+        background_down: 'numbutt/backer.png'
         pos: 300, 170
         size: 150, 150
         on_release: root.order('9')
@@ -80,7 +90,7 @@
     Button:
         id: nc
         background_normal: 'numbutt/numclr.png'
-        background_down: 'images/Pepsi.png'
+        background_down: 'numbutt/backer.png'
         pos: 325, 60
         on_release: root.clear_num()
 
@@ -94,7 +104,7 @@
     Label:
         id: number1
         text: "XXXX"
-        font_name: 'numbutt/AtomicAge-Regular.ttf'
+        font_name: 'numbutt/Font.ttf'
         font_size: 80
         color: 1, 1, 1, 1
         pos: 180, 675
@@ -102,7 +112,6 @@
     Button:
         id: pop1
         background_normal: 'images/Pepsi.png'
-        background_down: 'images/Pepsi.png'
         pos: 500, 3000
         size: 80, 150
 
@@ -241,17 +250,17 @@
 
     Label:
         id: orderT
-        font_name: 'numbutt/SpasticNerfbag.ttf'
+        font_name: 'numbutt/Font.ttf'
         text: "Is this your order"
-        font_size: 50
+        font_size: 40
         color: 1, 1, 1, 1
         pos: 175, 1200
 
     Label:
         id: orderS
-        font_name: 'numbutt/SpasticNerfbag.ttf'
+        font_name: 'numbutt/Font.ttf'
         text: "Starting your order"
-        font_size: 50
+        font_size: 40
         color: 1, 1, 1, 1
         pos: 175, 1200
 
