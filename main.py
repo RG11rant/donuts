@@ -5,16 +5,17 @@ import random
 import math
 from escpos.printer import Network
 from kivy.app import App
-# from kivy.core.window import Window
+from kivy.core.window import Window
 from kivy.uix.widget import Widget
 from kivy.clock import Clock
 
-# Window.size = (1280, 768) # uncomment on windows
+Window.size = (1280, 768) # uncomment on windows
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-host = '192.168.1.20'  # get local machine name
-port = 13131
+# host = '192.168.1.10'  # get local machine name
+host = '192.168.86.26'
+port = 12345
 
 try:
     print('starting host.')
@@ -22,9 +23,9 @@ try:
 except Exception as e:
     print(e)
 
-conn = sqlite3.connect('/home/sysop/pos/order.db')  # uncomment on raspberry pi
+# conn = sqlite3.connect('/home/sysop/pos/order.db')  # uncomment on raspberry pi
 
-# conn = sqlite3.connect('order.db')  # uncomment on windows
+conn = sqlite3.connect('order.db')  # uncomment on windows
 
 c = conn.cursor()
 
@@ -33,7 +34,7 @@ drinks = ['None', 'Pepsi', 'Mountain Dew', 'Root Beer', '7 Up', 'coffee', 'decaf
 
 def create_table():
     c.execute('CREATE TABLE IF NOT EXISTS donut(donutID int, drink int, topping int, orderNUM int,'
-              ' pay int)')
+              ' pay int, Timestamp DATETIME DEFAULT CURRENT_TIMESTAMP)')
 
 
 def data_entry(a1, b1, c1, d1, e1):
@@ -67,15 +68,19 @@ def pos_print(order=None):
     try:
         epson = Network("192.168.1.100")
         epson.image("rosie.png")
+        bar = '1234'
         epson.set(font='a', height=3, width=3, align='center')
         for m in order:
             epson.text(str(m[3]) + '\n')
+            bar = m[3]
             epson.set(font='a', height=1, width=1, align='left', text_type='u2')
             epson.text('Order 1 \n')
             epson.set(text_type='normal')
             epson.text(str(m[0]))
             epson.text(' Cups \n')
-        epson.qr('hiddenempire.ca', size=8)
+        epson.set(font='a', align='center')
+        epson.barcode(bar, 'EAN13', 64, 2, '', '')
+        # epson.qr('hiddenempire.ca', size=8)
         epson.cut()
     except Exception as ex:
         print(ex)
@@ -366,7 +371,7 @@ class Pos(Widget):
         self.ids.Gst1.text = '$0.00'
         self.ids.Cash1.text = '$0.00'
         m = '$m'
-        n = 1
+        # n = 1
         for x in self.order:
             data_entry(x[0], x[1], x[2], x[3], x[4])
             n = x[3]
@@ -377,7 +382,7 @@ class Pos(Widget):
             print(n)
         m += '\n'
         donut_que(str(m))
-        pos_print(self.order)
+        # pos_print(self.order)
         self.pop_name = [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ']
         self.num = [0, 0, 0, 0, 0]
         self.pop_index = 0
