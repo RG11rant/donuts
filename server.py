@@ -162,6 +162,9 @@ while True:
             if user["data"] == 'm1'.encode("utf-8"):
                 print('hi bot')
 
+            if user["data"] == 'pos'.encode("utf-8"):
+                print(data)
+
             # Iterate over connected clients and broadcast message
             for client_socket in clients:
                 # sent it

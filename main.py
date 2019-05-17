@@ -9,17 +9,24 @@ from kivy.core.window import Window
 from kivy.uix.widget import Widget
 from kivy.clock import Clock
 
-Window.size = (1280, 768) # uncomment on windows
+Window.size = (1280, 768)  # uncomment on windows
 
-sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 # host = '192.168.1.10'  # get local machine name
 host = '192.168.86.26'
 port = 12345
+window_id = "pos"
 
 try:
     print('starting host.')
-    sock.connect((host, port))  # uncomment on raspberry pi
+    client_socket.connect((host, port)) # uncomment on raspberry pi
+    client_socket.setblocking(False)
+
+    username = window_id.encode('utf-8')
+    username_header = '{:10}'.format(len(username)).encode('utf-8')
+    client_socket.send(username_header + username)
+    print("connected")
 except Exception as e:
     print(e)
 
@@ -56,7 +63,9 @@ def data_test():
 
 def donut_que(data):
     try:
-        sock.send(data.encode('utf-8'))
+        message = data.encode('utf-8')
+        message_header = '{:10}'.format(len(message)).encode('utf-8')
+        client_socket.send(message_header + message)
     except Exception as ex:
         print(ex)
     time.sleep(1)
@@ -370,7 +379,7 @@ class Pos(Widget):
         self.gst = 0.00
         self.ids.Gst1.text = '$0.00'
         self.ids.Cash1.text = '$0.00'
-        m = '$m'
+        m = 'm'
         # n = 1
         for x in self.order:
             data_entry(x[0], x[1], x[2], x[3], x[4])
@@ -380,7 +389,6 @@ class Pos(Widget):
             print(y)
             m += y[0]
             print(n)
-        m += '\n'
         donut_que(str(m))
         # pos_print(self.order)
         self.pop_name = [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ']
