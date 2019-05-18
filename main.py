@@ -9,18 +9,24 @@ from kivy.core.window import Window
 from kivy.uix.widget import Widget
 from kivy.clock import Clock
 
-Window.size = (1280, 768)  # uncomment on windows
+running_on = 'pie'  # pie or windows
+
+if running_on == 'pie':
+    host = '192.168.1.10'
+    conn = sqlite3.connect('/home/sysop/pos/order.db')  # uncomment on raspberry pi
+else:
+    host = '192.168.86.26'
+    Window.size = (1280, 768)
+    conn = sqlite3.connect('order.db')
 
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-# host = '192.168.1.10'  # get local machine name
-host = '192.168.86.26'
 port = 12345
 window_id = "pos"
 
 try:
     print('starting host.')
-    client_socket.connect((host, port)) # uncomment on raspberry pi
+    client_socket.connect((host, port))  # uncomment on raspberry pi
     client_socket.setblocking(False)
 
     username = window_id.encode('utf-8')
@@ -29,10 +35,6 @@ try:
     print("connected")
 except Exception as e:
     print(e)
-
-# conn = sqlite3.connect('/home/sysop/pos/order.db')  # uncomment on raspberry pi
-
-conn = sqlite3.connect('order.db')  # uncomment on windows
 
 c = conn.cursor()
 
@@ -88,8 +90,8 @@ def pos_print(order=None):
             epson.text(str(m[0]))
             epson.text(' Cups \n')
         epson.set(font='a', align='center')
-        epson.barcode(bar, 'EAN13', 64, 2, '', '')
-        # epson.qr('hiddenempire.ca', size=8)
+        # epson.barcode(bar, 'EAN13', 64, 2, '', '')
+        epson.qr('hiddenempire.ca', size=8)
         epson.cut()
     except Exception as ex:
         print(ex)
@@ -390,7 +392,8 @@ class Pos(Widget):
             m += y[0]
             print(n)
         donut_que(str(m))
-        # pos_print(self.order)
+        if running_on == 'pie':
+            pos_print(self.order)
         self.pop_name = [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ']
         self.num = [0, 0, 0, 0, 0]
         self.pop_index = 0

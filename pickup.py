@@ -12,8 +12,8 @@ Window.size = (480, 800)
 
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 # host = '127.0.0.1'  # get local machine name
-host = '192.168.86.26'
-# host = '192.168.1.10'
+# host = '192.168.86.26'
+host = '192.168.1.10'
 port = 12345
 
 HEADER_LENGTH = 10
