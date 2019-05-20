@@ -99,13 +99,15 @@ def pos_print(order=None):
             epson.set(font='a', height=2, width=2, align='left', text_type='u2')
             epson.text('    Order   \n')
             epson.set(text_type='normal')
-            epson.text(str(m[0]))
+
             if int(m[0]) > 1:
+                epson.text(str(m[0]))
                 epson.text(' Cups of Donuts')
                 price = int(m[0]) * 4.76
                 epson.text('     $' + str(price) + '\n')
                 price = int(m[0]) * 4.7619
-            else:
+            elif int(m[0]) == 1:
+                epson.text(str(m[0]))
                 epson.text(' Cup of Donuts')
                 epson.text('      $4.76\n')
                 price = 4.7619
@@ -117,6 +119,7 @@ def pos_print(order=None):
                 epson.text('Mountain Dew')
                 p2 = p * 1.9047
                 p = p * 1.90
+                p = math.ceil(p * 100) / 100
                 price = price + p2
                 epson.text('      $' + str(p) + '0\n')
             if int(n[1]) > 0:
@@ -124,6 +127,7 @@ def pos_print(order=None):
                 epson.text('Root Beer')
                 p = int(n[1]) * 1.90
                 p2 = int(n[1]) * 1.9047
+                p = math.ceil(p * 100) / 100
                 price = price + p2
                 epson.text('         $' + str(p) + '0\n')
             if int(n[2]) > 0:
@@ -131,6 +135,7 @@ def pos_print(order=None):
                 epson.text('7 Up')
                 p = int(n[2]) * 1.90
                 p2 = int(n[2]) * 1.9047
+                p = math.ceil(p * 100) / 100
                 price = price + p2
                 epson.text('              $' + str(p) + '0\n')
             if int(n[3]) > 0:
@@ -138,6 +143,7 @@ def pos_print(order=None):
                 epson.text('Pepsi')
                 p = int(n[3]) * 1.90
                 p2 = int(n[3]) * 1.9047
+                p = math.ceil(p * 100) / 100
                 price = price + p2
                 epson.text('             $' + str(p) + '0\n')
 
