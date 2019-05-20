@@ -8,12 +8,13 @@ from kivy.app import App
 from kivy.core.window import Window
 from kivy.uix.widget import Widget
 from kivy.clock import Clock
+import datetime
 
 running_on = 'pie'  # pie or windows
 
 if running_on == 'pie':
     host = '192.168.1.10'
-    conn = sqlite3.connect('/home/sysop/pos/order.db')  # uncomment on raspberry pi
+    conn = sqlite3.connect('/home/sysop/pos/order.db')
 else:
     host = '192.168.86.26'
     Window.size = (1280, 768)
@@ -73,136 +74,92 @@ def donut_que(data):
     time.sleep(1)
 
 
+def un_start():
+    command = "/usr/bin/sudo /sbin/shutdown -r now"
+    import subprocess
+    process = subprocess.Popen(command.split(), stdout=subprocess.PIPE)
+    output = process.communicate()[0]
+    print(output)
+
+
 def pos_print(order=None):
     if order is None:
         order = []
     try:
         epson = Network("192.168.1.100")
-        epson.image("rosie.png")
-        bar = '1234'
-        epson.set(font='a', height=3, width=3, align='center')
+        epson.image("/home/sysop/pos/rosie.png")
+        bar = '0000'
+        price = 0
         for m in order:
+            epson.set(height=2, width=2, align='center')
+            epson.text('Your PIN\n')
+            epson.set(font='a', height=3, width=3, align='center')
             epson.text(str(m[3]) + '\n')
-            bar = m[3]
-            epson.set(font='a', height=1, width=1, align='left', text_type='u2')
-            epson.text('Order 1 \n')
+            bar = str(m[3])
+            epson.set(font='a', height=2, width=2, align='left', text_type='u2')
+            epson.text('    Order   \n')
             epson.set(text_type='normal')
             epson.text(str(m[0]))
-            epson.text(' Cups \n')
-        epson.set(font='a', align='center')
-        # epson.barcode(bar, 'EAN13', 64, 2, '', '')
-        epson.qr('hiddenempire.ca', size=8)
+            if int(m[0]) > 1:
+                epson.text(' Cups of Donuts')
+                price = int(m[0]) * 4.76
+                epson.text('     $' + str(price) + '\n')
+                price = int(m[0]) * 4.7619
+            else:
+                epson.text(' Cup of Donuts')
+                epson.text('      $4.76\n')
+                price = 4.7619
+
+            n = str(m[1])
+            if int(n[0]) > 1:
+                p = int(n[0]) - 1
+                epson.text(str(p) + '  ')
+                epson.text('Pepsi')
+                p2 = p * 1.9047
+                p = p * 1.90
+                price = price + p2
+                epson.text('             $' + str(p) + '0\n')
+            if int(n[1]) > 0:
+                epson.text(n[1] + '  ')
+                epson.text('Mountain Dew')
+                p = int(n[1]) * 1.90
+                p2 = int(n[1]) * 1.9047
+                price = price + p2
+                epson.text('      $' + str(p) + '0\n')
+            if int(n[2]) > 0:
+                epson.text(n[2] + '  ')
+                epson.text('7 Up')
+                p = int(n[2]) * 1.90
+                p2 = int(n[2]) * 1.9047
+                price = price + p2
+                epson.text('              $' + str(p) + '0\n')
+            if int(n[3]) > 0:
+                epson.text(n[3] + '  ')
+                epson.text('Root Beer')
+                p = int(n[3]) * 1.90
+                p2 = int(n[3]) * 1.9047
+                price = price + p2
+                epson.text('         $' + str(p) + '0\n')
+
+        gst = price * .05
+        nice_gst = math.ceil(gst * 100) / 100
+        epson.text('               GST:  $' + str(nice_gst) + '\n')
+        price = price + gst
+        tot = math.ceil(price * 100) / 100
+        epson.text('             Total:  $' + str(tot) + '0\n')
+        ts = time.time()
+        st = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
+        print(st)
+        epson.set(font='a', height=1, width=1, align='center')
+        epson.text(st)
+        epson.text('\n\n')
+        epson.set(font='a', height=2, width=2, align='center')
+        epson.text('THANK YOU\n')
+        epson.set(font='a', height=1, width=1, align='center')
+        epson.barcode(bar, 'CODE128', function_type="B")
         epson.cut()
     except Exception as ex:
         print(ex)
-
-
-'''
-def for_printer(big_list=None):
-    if big_list is None:
-        big_list = []
-    try:
-        epson = Network("192.168.1.100")
-        epson.image("mrsbot.png")
-        price = 0.0
-        bar = '1234'
-        for m in big_list:
-            if int(m[6]) == 1:
-                if int(m[0]) > 0:
-                    f = soup_print(m[1])
-                    d = str(drinks[int(m[3])]) + '     $1.90 \n'
-                    if m[1] == 1:
-                        price = 4.76
-                    if m[1] == 2:
-                        price = 7.62
-                    epson.set(font='a', height=3, width=3, align='center')
-                    epson.text(str(m[5]) + '\n')
-                    bar = m[5]
-                    epson.set(font='a', height=1, width=1, align='left', text_type='u2')
-                    epson.text('Order 1 \n')
-                    epson.set(text_type='normal')
-                    epson.text(f)
-                    epson.text(d)
-                else:
-                    d = str(drinks[int(m[3])]) + '     $1.90 \n'
-                    epson.set(font='a', height=3, width=3, align='center')
-                    epson.text(str(m[5]) + '\n')
-                    epson.set(font='a', height=1, width=1, align='left', text_type='u2')
-                    epson.text('Order 1 \n')
-                    epson.set(text_type='normal')
-                    epson.text(d)
-                print(d)
-            if int(m[6]) == 2:
-                if int(m[0]) > 0:
-                    f = soup_print(m[1])
-                    d = 'A ' + str(drinks[int(m[3])]) + ' to drink  $1.90 \n'
-                    epson.set(font='a', height=1, width=1, align='left', text_type='u2')
-                    epson.text('Order 2 \n')
-                    epson.set(text_type='normal')
-                    epson.text(f)
-                    epson.text(d)
-                else:
-                    d = 'A ' + str(drinks[int(m[3])]) + ' to drink  $1.90 \n'
-                    epson.set(font='a', height=1, width=1, align='left', text_type='u2')
-                    epson.text('Order 2 \n')
-                    epson.set(text_type='normal')
-                    epson.text(d)
-                print(d)
-            if int(m[6]) == 3:
-                if int(m[0]) > 0:
-                    f = soup_print(m[1])
-                    d = 'A ' + str(drinks[int(m[3])]) + ' to drink  $1.90 \n'
-                    epson.set(font='a', height=1, width=1, align='left', text_type='u2')
-                    epson.text('Order 3 \n')
-                    epson.set(text_type='normal')
-                    epson.text(f)
-                    epson.text(d)
-                else:
-                    d = 'A ' + str(drinks[int(m[3])]) + ' to drink  $1.90 \n'
-                    epson.set(font='a', height=1, width=1, align='left', text_type='u2')
-                    epson.text('Order 3 \n')
-                    epson.set(text_type='normal')
-                    epson.text(d)
-                print(d)
-            if int(m[6]) == 4:
-                if int(m[0]) > 0:
-                    f = soup_print(m[1])
-                    d = 'A ' + str(drinks[int(m[3])]) + ' to drink  $1.90 \n'
-                    epson.set(font='a', height=1, width=1, align='left', text_type='u2')
-                    epson.text('Order 4 \n')
-                    epson.set(text_type='normal')
-                    epson.text(f)
-                    epson.text(d)
-                else:
-                    d = 'A ' + str(drinks[int(m[3])]) + ' to drink  $1.90 \n'
-                    epson.set(font='a', height=1, width=1, align='left', text_type='u2')
-                    epson.text('Order 4 \n')
-                    epson.set(text_type='normal')
-                    epson.text(d)
-                print(d)
-        epson.text('Total : ')
-        epson.text(str(price) + '\n')
-        epson.barcode(bar, 'EAN13', 64, 2, '', '')
-        # epson.set(font='a', align='center')
-        # epson.qr('hiddenempire.ca', size=8)
-        epson.cut()
-    except Exception as ex:
-        print(ex)
-
-
-def soup_print(size):
-    soup_string = ''
-    if size == 1:
-        soup_string = 'Cup of '
-    if size == 2:
-        soup_string = 'Bowl of '
-    if size == 1:
-        soup_string += '     $4.76'
-    if size == 2:
-        soup_string += '     $7.62'
-    soup_string += '\n'
-    return soup_string
-'''
 
 
 class Pos(Widget):

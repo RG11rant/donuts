@@ -18,17 +18,20 @@ port = 12345
 
 HEADER_LENGTH = 10
 window_id = "w1"
+not_online = True
 
-try:
-    client_socket.connect((host, port))
-    client_socket.setblocking(False)
+while not_online:
+    try:
+        client_socket.connect((host, port))
+        client_socket.setblocking(False)
 
-    username = window_id.encode('utf-8')
-    username_header = '{:10}'.format(len(username)).encode('utf-8')
-    client_socket.send(username_header + username)
-    print("connected")
-except Exception as e:
-    print(e)
+        username = window_id.encode('utf-8')
+        username_header = '{:10}'.format(len(username)).encode('utf-8')
+        client_socket.send(username_header + username)
+        print("connected")
+    except Exception as e:
+        print(e)
+        time.sleep(5)
 
 sizes = ['None', 'donut', 'donuts']
 drinks = ['None', 'Pepsi', 'Mountain Dew', 'Root Beer', '7 Up', 'coffee', 'decaff']
@@ -38,8 +41,15 @@ def robot(data):
 
     message = data.encode('utf-8')
     message_header = '{:10}'.format(len(message)).encode('utf-8')
-    # message_header = f"{len(message):<{HEADER_LENGTH}}".encode('utf-8')
     client_socket.send(message_header + message)
+
+
+def un_start():
+    command = "/usr/bin/sudo /sbin/shutdown -r now"
+    import subprocess
+    process = subprocess.Popen(command.split(), stdout=subprocess.PIPE)
+    output = process.communicate()[0]
+    print(output)
 
 
 def messages():
