@@ -114,18 +114,18 @@ def pos_print(order=None):
             if int(n[0]) > 1:
                 p = int(n[0]) - 1
                 epson.text(str(p) + '  ')
-                epson.text('Pepsi')
+                epson.text('Mountain Dew')
                 p2 = p * 1.9047
                 p = p * 1.90
                 price = price + p2
-                epson.text('             $' + str(p) + '0\n')
+                epson.text('      $' + str(p) + '0\n')
             if int(n[1]) > 0:
                 epson.text(n[1] + '  ')
-                epson.text('Mountain Dew')
+                epson.text('Root Beer')
                 p = int(n[1]) * 1.90
                 p2 = int(n[1]) * 1.9047
                 price = price + p2
-                epson.text('      $' + str(p) + '0\n')
+                epson.text('         $' + str(p) + '0\n')
             if int(n[2]) > 0:
                 epson.text(n[2] + '  ')
                 epson.text('7 Up')
@@ -135,21 +135,23 @@ def pos_print(order=None):
                 epson.text('              $' + str(p) + '0\n')
             if int(n[3]) > 0:
                 epson.text(n[3] + '  ')
-                epson.text('Root Beer')
+                epson.text('Pepsi')
                 p = int(n[3]) * 1.90
                 p2 = int(n[3]) * 1.9047
                 price = price + p2
-                epson.text('         $' + str(p) + '0\n')
+                epson.text('             $' + str(p) + '0\n')
 
         gst = price * .05
         nice_gst = math.ceil(gst * 100) / 100
-        epson.text('               GST:  $' + str(nice_gst) + '\n')
+        if len(str(nice_gst)) < 4:
+            epson.text('               GST:  $' + str(nice_gst) + '0\n')
+        else:
+            epson.text('               GST:  $' + str(nice_gst) + '\n')
         price = price + gst
         tot = math.ceil(price * 100) / 100
         epson.text('             Total:  $' + str(tot) + '0\n')
         ts = time.time()
-        st = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
-        print(st)
+        st = datetime.datetime.fromtimestamp(ts).strftime('%d-%m-%Y %H:%M:%S')
         epson.set(font='a', height=1, width=1, align='center')
         epson.text(st)
         epson.text('\n\n')

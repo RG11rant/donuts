@@ -34,25 +34,25 @@ def pos_print(order=None):
             if int(n[0]) > 1:
                 p = int(n[0]) - 1
                 epson.text(str(p) + '  ')
-                epson.text('Pepsi')
+                epson.text('Mountain Dew')
                 p2 = p * 1.9047
                 p = p * 1.90
                 price = price + p2
-                epson.text('             $' + str(p) + '0\n')
+                epson.text('      $' + str(p) + '0\n')
             if int(n[1]) > 0:
                 epson.text(n[1] + '  ')
-                epson.text('Mountain Dew')
-                p = int(n[1]) * 1.90
-                p2 = int(n[1]) * 1.9047
-                price = price + p2
-                epson.text('      $' + str(p) + '0\n')
-            if int(n[2]) > 0:
-                epson.text(n[2] + '  ')
                 epson.text('Root Beer')
                 p = int(n[1]) * 1.90
                 p2 = int(n[1]) * 1.9047
                 price = price + p2
                 epson.text('         $' + str(p) + '0\n')
+            if int(n[2]) > 0:
+                epson.text(n[2] + '  ')
+                epson.text('Pepsi')
+                p = int(n[1]) * 1.90
+                p2 = int(n[1]) * 1.9047
+                price = price + p2
+                epson.text('             $' + str(p) + '0\n')
             if int(n[3]) > 0:
                 epson.text(n[3] + '  ')
                 epson.text('7 Up')
