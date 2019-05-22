@@ -5,6 +5,7 @@ import random
 import math
 from escpos.printer import Network
 from kivy.app import App
+from kivy.core.audio import SoundLoader
 from kivy.core.window import Window
 from kivy.uix.widget import Widget
 from kivy.clock import Clock
@@ -24,6 +25,7 @@ client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 port = 12345
 window_id = "pos"
+
 
 try:
     print('starting host.')
@@ -184,6 +186,10 @@ class Pos(Widget):
         self.pop_name = [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ']
         self.num = [0, 0, 0, 0, 0]
         self.order = []
+        if running_on == 'pie':
+            self.click = SoundLoader.load('/home/sysop/pos/sound/blip.wav')
+        else:
+            self.click = SoundLoader.load('sound/blip.wav')
 
     def clear_it(self):
         self.cash = 0.00
@@ -222,9 +228,13 @@ class Pos(Widget):
         self.ids.soup4.pos = 900, 20
         self.ids.new.pos = 40, -10
         self.ids.drink.pos = 200, -10
+        if self.click:
+            self.click.play()
         self.num[3] = self.key_num
 
     def soup(self, x):
+        if self.click:
+            self.click.play()
         if x == '1':
             self.ids.order1S.text = '1 Bag of donuts'
             self.ids.order1SZP.text = '$4.76'
@@ -271,6 +281,8 @@ class Pos(Widget):
         pass
 
     def pop(self, x):
+        if self.click:
+            self.click.play()
         if x == '1':
             self.pop_name[self.pop_index] = 'Pepsi'
             self.pop_name[self.pop_index + 4] = '$1.90'
@@ -327,6 +339,7 @@ class Pos(Widget):
 
     def pay(self):
         self.m = 3
+        self.ids.pay.pos = 5500, 400
         if self.start_time:
             Clock.schedule_interval(self.update, 1)
             self.start_time = False
@@ -346,7 +359,7 @@ class Pos(Widget):
         self.gst = 0.00
         self.ids.Gst1.text = '$0.00'
         self.ids.Cash1.text = '$0.00'
-        m = 'm'
+        m = '$M'
         # n = 1
         for x in self.order:
             data_entry(x[0], x[1], x[2], x[3], x[4])
@@ -356,6 +369,7 @@ class Pos(Widget):
             print(y)
             m += y[0]
             print(n)
+        m += '#'
         donut_que(str(m))
         if running_on == 'pie':
             pos_print(self.order)

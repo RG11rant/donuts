@@ -1,24 +1,28 @@
 import socket
 import sqlite3
 import select
+import time
+import datetime
 
 conn = sqlite3.connect('order.db')
 c = conn.cursor()
 
 HEADERSIZE = 10
+running_on = 'pi'  # pie or windows
 
-host = '192.168.86.26'
-# host = '192.168.1.10'
-# host = '127.0.0.1'  # get local machine name
+if running_on == 'pie':
+    host = '192.168.1.10'
+    bot = '192.168.1.20'
+    win1 = '192.168.1.11'
+    win2 = '192.168.1.12'
+else:
+    host = '192.168.86.26'
+    # host = '127.0.0.1'  # get local machine name
+    bot = '192.168.86.177'
+    win1 = '192.168.86.26'
+    win2 = '192.168.86.11'
+
 port = 12345
-
-bot = '192.168.86.177'
-win1 = '192.168.86.26'
-win2 = '192.168.86.11'
-
-# bot = '192.168.1.20'
-# win1 = '192.168.1.11'
-# win2 = '192.168.1.12'
 
 send_to_bot = False
 send_to_w1 = False
@@ -40,6 +44,16 @@ print('Listening for connections on {}:{}...'.format(host, port))
 
 sizes = ['None', 'donut', 'donuts']
 drinks = ['None', 'Pepsi', 'Mountain Dew', 'Root Beer', '7 Up', 'coffee', 'decaff']
+
+
+def log_it(note):
+    f = open("log.txt", "a+")
+    ts = time.time()
+    st = datetime.datetime.fromtimestamp(ts).strftime('%d-%m-%Y %H:%M:%S')
+    info = st + ' > '
+    info += note
+    info += '\n'
+    f.write(info)
 
 
 def create_table():
@@ -118,6 +132,7 @@ while True:
             clients[client_socket] = user
 
             print('Accepted connection from {}, username: {}'.format(client_address, user['data'].decode('utf-8')))
+            log_it('Accepted connection from {}, username: {}'.format(client_address, user['data'].decode('utf-8')))
         else:
             # Receive message
             message = receive_message(notified_socket)
@@ -125,7 +140,7 @@ while True:
             # If False, client disconnected, cleanup
             if message is False:
                 print('Closed connection from: {}'.format(clients[notified_socket]['data'].decode('utf-8')))
-
+                log_it('Closed connection from: {}'.format(clients[notified_socket]['data'].decode('utf-8')))
                 # Remove from list for socket.socket()
                 sockets_list.remove(notified_socket)
 
@@ -138,7 +153,7 @@ while True:
             user = clients[notified_socket]
 
             print('Received message from {}: {}'.format(user["data"].decode("utf-8"), message["data"].decode("utf-8")))
-
+            log_it('Received message from {}: {}'.format(user["data"].decode("utf-8"), message["data"].decode("utf-8")))
             data = message["data"].decode("utf-8")
 
             if user["data"] == 'w1'.encode("utf-8"):
@@ -164,6 +179,8 @@ while True:
 
             if user["data"] == 'pos'.encode("utf-8"):
                 print(data)
+                bot_data = data
+                send_to_bot = True
 
             # Iterate over connected clients and broadcast message
             for client_socket in clients:
