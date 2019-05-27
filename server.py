@@ -4,31 +4,33 @@ import select
 import time
 import datetime
 
-conn = sqlite3.connect('order.db')
-c = conn.cursor()
-
 HEADERSIZE = 10
-running_on = 'pi'  # pie or windows
+running_on_pie = False  # pie or windows
 
-if running_on == 'pie':
+if running_on_pie:
     host = '192.168.1.10'
     bot = '192.168.1.20'
     win1 = '192.168.1.11'
     win2 = '192.168.1.12'
+    conn = sqlite3.connect('/home/sysop/pos/order.db')
 else:
     host = '192.168.86.26'
     # host = '127.0.0.1'  # get local machine name
     bot = '192.168.86.177'
     win1 = '192.168.86.26'
     win2 = '192.168.86.11'
+    conn = sqlite3.connect('order.db')
 
 port = 12345
+
+c = conn.cursor()
 
 send_to_bot = False
 send_to_w1 = False
 send_to_w2 = False
 
 bot_data = ''
+bot_hold = ''
 
 serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 serverSocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -44,10 +46,14 @@ print('Listening for connections on {}:{}...'.format(host, port))
 
 sizes = ['None', 'donut', 'donuts']
 drinks = ['None', 'Pepsi', 'Mountain Dew', 'Root Beer', '7 Up', 'coffee', 'decaff']
+x = 0
 
 
 def log_it(note):
-    f = open("log.txt", "a+")
+    if running_on_pie:
+        f = open("/home/sysop/pos/log.txt", "a+")
+    else:
+        f = open("log.txt", "a+")
     ts = time.time()
     st = datetime.datetime.fromtimestamp(ts).strftime('%d-%m-%Y %H:%M:%S')
     info = st + ' > '
@@ -99,7 +105,7 @@ def order_process(order):
             xa = xa.split(",")
             dm = '$A' + str(xa[0])
             if str(xa[1]) == '0':
-                dm += '1000'
+                dm += '1000#'
             else:
                 dm += str(xa[1])
                 dm += '#'
@@ -151,15 +157,40 @@ while True:
 
             # Get user by notified socket, so we will know who sent the message
             user = clients[notified_socket]
-
-            print('Received message from {}: {}'.format(user["data"].decode("utf-8"), message["data"].decode("utf-8")))
-            log_it('Received message from {}: {}'.format(user["data"].decode("utf-8"), message["data"].decode("utf-8")))
             data = message["data"].decode("utf-8")
+            if data != 'ready':
+                print('Received message from {}: {}'.format(user["data"].decode("utf-8"), data))
+                log_it('Received message from {}: {}'.format(user["data"].decode("utf-8"), data))
 
+            #  main com arduino
+            if user["data"] == 'm1'.encode("utf-8"):
+                if data == 'A order In':
+                    message2_header = '{:10}'.format(len(data))
+                    message['header'] = message2_header.encode("utf-8")
+                    message['data'] = data.encode("utf-8")
+                    send_to_w1 = True
+
+                if data == 'end':
+                    message2_header = '{:10}'.format(len(data))
+                    message['header'] = message2_header.encode("utf-8")
+                    message['data'] = data.encode("utf-8")
+                    send_to_w1 = True
+
+                if data == 'ready':
+                    bot_data = 'G'
+                    send_to_bot = True
+
+            # pos info
+            if user["data"] == 'pos'.encode("utf-8"):
+                print(data)
+                bot_data = data
+                send_to_bot = True
+
+            # window A data and processing
             if user["data"] == 'w1'.encode("utf-8"):
                 if len(data) == 4:
                     message2 = order_process(data)
-                    bot_data = message2
+                    bot_hold = message2
                     message2_header = '{:10}'.format(len(message2))
                     message['header'] = message2_header.encode("utf-8")
                     message['data'] = message2.encode("utf-8")
@@ -171,16 +202,10 @@ while True:
                         message2_header = '{:10}'.format(len(data))
                         message['header'] = message2_header.encode("utf-8")
                         message['data'] = data.encode("utf-8")
+                        print(bot_data)
                         send_to_bot = True
-                        send_to_w1 = True
-
-            if user["data"] == 'm1'.encode("utf-8"):
-                print('hi bot')
-
-            if user["data"] == 'pos'.encode("utf-8"):
-                print(data)
-                bot_data = data
-                send_to_bot = True
+                        bot_data = bot_hold
+                        # send_to_w1 = True
 
             # Iterate over connected clients and broadcast message
             for client_socket in clients:

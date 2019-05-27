@@ -115,39 +115,40 @@ def pos_print(order=None):
                 price = 4.7619
 
             n = str(m[1])
-            if int(n[0]) > 1:
-                p = int(n[0]) - 1
-                epson.text(str(p) + '  ')
-                epson.text('Mountain Dew')
-                p2 = p * 1.9047
-                p = p * 1.90
-                p = math.ceil(p * 100) / 100
-                price = price + p2
-                epson.text('      $' + str(p) + '0\n')
-            if int(n[1]) > 0:
-                epson.text(n[1] + '  ')
-                epson.text('Root Beer')
-                p = int(n[1]) * 1.90
-                p2 = int(n[1]) * 1.9047
-                p = math.ceil(p * 100) / 100
-                price = price + p2
-                epson.text('         $' + str(p) + '0\n')
-            if int(n[2]) > 0:
-                epson.text(n[2] + '  ')
-                epson.text('7 Up')
-                p = int(n[2]) * 1.90
-                p2 = int(n[2]) * 1.9047
-                p = math.ceil(p * 100) / 100
-                price = price + p2
-                epson.text('              $' + str(p) + '0\n')
-            if int(n[3]) > 0:
-                epson.text(n[3] + '  ')
-                epson.text('Pepsi')
-                p = int(n[3]) * 1.90
-                p2 = int(n[3]) * 1.9047
-                p = math.ceil(p * 100) / 100
-                price = price + p2
-                epson.text('             $' + str(p) + '0\n')
+            if len(n) > 2:
+                if int(n[0]) > 1:
+                    p = int(n[0]) - 1
+                    epson.text(str(p) + '  ')
+                    epson.text('Mountain Dew')
+                    p2 = p * 1.9047
+                    p = p * 1.90
+                    p = math.ceil(p * 100) / 100
+                    price = price + p2
+                    epson.text('      $' + str(p) + '0\n')
+                if int(n[1]) > 0:
+                    epson.text(n[1] + '  ')
+                    epson.text('Root Beer')
+                    p = int(n[1]) * 1.90
+                    p2 = int(n[1]) * 1.9047
+                    p = math.ceil(p * 100) / 100
+                    price = price + p2
+                    epson.text('         $' + str(p) + '0\n')
+                if int(n[2]) > 0:
+                    epson.text(n[2] + '  ')
+                    epson.text('7 Up')
+                    p = int(n[2]) * 1.90
+                    p2 = int(n[2]) * 1.9047
+                    p = math.ceil(p * 100) / 100
+                    price = price + p2
+                    epson.text('              $' + str(p) + '0\n')
+                if int(n[3]) > 0:
+                    epson.text(n[3] + '  ')
+                    epson.text('Pepsi')
+                    p = int(n[3]) * 1.90
+                    p2 = int(n[3]) * 1.9047
+                    p = math.ceil(p * 100) / 100
+                    price = price + p2
+                    epson.text('             $' + str(p) + '0\n')
 
         gst = price * .05
         nice_gst = math.ceil(gst * 100) / 100
@@ -178,6 +179,7 @@ class Pos(Widget):
         super(Pos, self).__init__(**kwargs)
         self.cash = 0.00
         self.gst = 0.00
+        self.total = 0.00
         self.key_num = 0
         self.drink_num = 1000
         self.pop_index = 0
@@ -319,6 +321,7 @@ class Pos(Widget):
         self.ids.Gst1.text = sub
         tot1 = self.cash + self.gst
         tot2 = math.ceil(tot1 * 100) / 100
+        self.total = tot2
         tots = '$' + str(tot2) + '0'
         self.ids.Cash1.text = tots
         if self.pop_index > 3:
@@ -340,6 +343,10 @@ class Pos(Widget):
     def pay(self):
         self.m = 3
         self.ids.pay.pos = 5500, 400
+        bills = '$C'
+        bills += str(self.total)
+        bills += '#'
+        donut_que(bills)
         if self.start_time:
             Clock.schedule_interval(self.update, 1)
             self.start_time = False
@@ -357,6 +364,7 @@ class Pos(Widget):
         self.drink_num = 1000
         self.cash = 0.00
         self.gst = 0.00
+        self.total = 0.00
         self.ids.Gst1.text = '$0.00'
         self.ids.Cash1.text = '$0.00'
         m = '$M'
@@ -370,9 +378,11 @@ class Pos(Widget):
             m += y[0]
             print(n)
         m += '#'
-        donut_que(str(m))
+        print(m)
         if running_on == 'pie':
             pos_print(self.order)
+
+        donut_que(str(m))
         self.pop_name = [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ']
         self.num = [0, 0, 0, 0, 0]
         self.pop_index = 0

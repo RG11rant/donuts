@@ -281,6 +281,7 @@ class Pick(Widget):
 
     def update(self, _):
         info = messages()
+        print(info)
         if info == 'started':
             self.ids.orderS.text = 'Started.'
         if info == 'end':
