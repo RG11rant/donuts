@@ -9,6 +9,7 @@ running_on_pie = False  # pie or windows
 
 if running_on_pie:
     host = '192.168.1.10'
+    pos = '192.168.1.10'
     bot = '192.168.1.20'
     win1 = '192.168.1.11'
     win2 = '192.168.1.12'
@@ -16,6 +17,7 @@ if running_on_pie:
 else:
     host = '192.168.86.26'
     # host = '127.0.0.1'  # get local machine name
+    pos = '192.168.86.26'
     bot = '192.168.86.177'
     win1 = '192.168.86.26'
     win2 = '192.168.86.11'
@@ -28,6 +30,7 @@ c = conn.cursor()
 send_to_bot = False
 send_to_w1 = False
 send_to_w2 = False
+send_to_pos = False
 
 bot_data = ''
 bot_hold = ''
@@ -176,6 +179,12 @@ while True:
                     message['data'] = data.encode("utf-8")
                     send_to_w1 = True
 
+                if data[0] == '$':
+                    message2_header = '{:10}'.format(len(data))
+                    message['header'] = message2_header.encode("utf-8")
+                    message['data'] = data.encode("utf-8")
+                    send_to_pos = True
+
                 if data == 'ready':
                     bot_data = 'G'
                     send_to_bot = True
@@ -223,6 +232,10 @@ while True:
                 if the_ip == bot and send_to_bot:
                     client_socket.send(bot_data.encode("utf-8"))
                     send_to_bot = False
+
+                if the_ip == pos and send_to_pos:
+                    client_socket.send(user['header'] + user['data'] + message['header'] + message['data'])
+                    send_to_pos = False
 
     # It's not really necessary to have this, but will handle some socket exceptions just in case
     for notified_socket in exception_sockets:

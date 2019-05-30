@@ -65,6 +65,7 @@ def messages():
         print(username1)
 
         message_header = client_socket.recv(HEADER_LENGTH)
+        print(message_header)
         message_length = int(message_header.decode('utf-8').strip())
         message = client_socket.recv(message_length).decode('utf-8')
         return message

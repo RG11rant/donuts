@@ -3,15 +3,18 @@ import socket
 import time
 import random
 import math
+import errno
+import sys
+import datetime
 from escpos.printer import Network
 from kivy.app import App
 from kivy.core.audio import SoundLoader
 from kivy.core.window import Window
 from kivy.uix.widget import Widget
 from kivy.clock import Clock
-import datetime
 
-running_on = 'pie'  # pie or windows
+
+running_on = 'pi'  # pie or windows
 
 if running_on == 'pie':
     host = '192.168.1.10'
@@ -26,6 +29,7 @@ client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 port = 12345
 window_id = "pos"
 
+HEADER_LENGTH = 10
 
 try:
     print('starting host.')
@@ -74,6 +78,34 @@ def donut_que(data):
     except Exception as ex:
         print(ex)
     time.sleep(1)
+
+
+def messages():
+    try:
+        window_header = client_socket.recv(HEADER_LENGTH)
+        if not len(window_header):
+            print('Connection closed by the server')
+            sys.exit()
+
+        username_length = int(username_header.decode('utf-8').strip())
+        username1 = client_socket.recv(username_length).decode('utf-8')
+        if username1 == 'me':
+            print(username1)
+
+        message_header = client_socket.recv(9)
+        message_length = int(message_header.decode('utf-8').strip())
+        message = client_socket.recv(message_length).decode('utf-8')
+        return message
+
+    except IOError as et:
+        if et.errno != errno.EAGAIN and et.errno != errno.EWOULDBLOCK:
+            print('Reading error: {}'.format(str(et)))
+            sys.exit()
+
+    except Exception as em:
+        # Any other exception - something happened, exit
+        print('Reading error: '.format(str(em)))
+        # sys.exit()
 
 
 def un_start():
@@ -184,7 +216,6 @@ class Pos(Widget):
         self.drink_num = 1000
         self.pop_index = 0
         self.m = 0
-        self.start_time = True
         self.pop_name = [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ']
         self.num = [0, 0, 0, 0, 0]
         self.order = []
@@ -273,6 +304,7 @@ class Pos(Widget):
         self.ids.Gst1.text = sub
         tot1 = self.cash + self.gst
         tot2 = math.ceil(tot1 * 100) / 100
+        self.total = tot2
         tots = '$' + str(tot2) + '0'
         self.ids.Cash1.text = tots
 
@@ -341,23 +373,64 @@ class Pos(Widget):
         self.ids.pay.pos = 550, 400
 
     def pay(self):
-        self.m = 3
+        self.m = 1
         self.ids.pay.pos = 5500, 400
         bills = '$C'
         bills += str(self.total)
         bills += '#'
         donut_que(bills)
-        if self.start_time:
-            Clock.schedule_interval(self.update, 1)
-            self.start_time = False
+        self.ids.bill.pos = 800, 300
+        self.ids.bill_name.pos = 800, 400
+        self.ids.payed.pos = 1000, 500
+        self.ids.payed_name.pos = 700, 500
+        self.ids.changes.pos = 800, 100
+        sub = '$' + str(self.total)
+        self.ids.payed.text = sub
+        Clock.schedule_interval(self.update, 1)
 
     def update(self, _):
-        if self.m == 3:
+        self.m += 1
+        info = messages()
+        bill_it = self.total
+
+        if 1000 > self.m > 3:
+            print('test1')
+            if info is not None:
+                paying = info.strip('$')
+                paying = int(paying) - 100
+                paying = paying / 4
+                print('payed {}'.format(paying))
+                print('bill {}'.format(bill_it))
+                total = bill_it - paying
+                total_s = '$'
+                total_s += str(total)
+                if paying > 0:
+                    info = '$'
+                    info += str(paying)
+                    change = ' '
+
+                else:
+                    change = '$'
+                    change += str(abs(paying))
+                    print(change)
+                    self.ids.changes_name.pos = 800, 200
+                    info = 'Payed'
+
+                self.ids.payed.text = info
+                self.ids.bill.text = total_s
+                self.ids.changes.text = change
+
+        elif self.m > 1001:
             self.payed()
-            self.m = 6
+            Clock.unschedule(self.update)
 
     def payed(self):
-        self.ids.pay.pos = 900, 3000
+        self.ids.bill.pos = 7000, 500
+        self.ids.bill_name.pos = 8000, 400
+        self.ids.payed.pos = 7000, 500
+        self.ids.payed_name.pos = 7000, 500
+        self.ids.changes.pos = 7000, 500
+        self.ids.changes_name.pos = 8000, 200
         self.ids.new.pos = 900, 3000
         self.num[4] = 1
         self.order.append(self.num)
@@ -368,7 +441,6 @@ class Pos(Widget):
         self.ids.Gst1.text = '$0.00'
         self.ids.Cash1.text = '$0.00'
         m = '$M'
-        # n = 1
         for x in self.order:
             data_entry(x[0], x[1], x[2], x[3], x[4])
             n = x[3]
