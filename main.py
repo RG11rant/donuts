@@ -399,8 +399,6 @@ class Pos(Widget):
                 paying = info.strip('$')
                 paying = int(paying) - 100
                 paying = paying / 4
-                print('payed {}'.format(paying))
-                print('bill {}'.format(bill_it))
                 total = bill_it - paying
                 total_s = '$'
                 total_s += str(total)
@@ -412,7 +410,6 @@ class Pos(Widget):
                 else:
                     change = '$'
                     change += str(abs(paying))
-                    print(change)
                     self.ids.changes_name.pos = 800, 200
                     info = 'Payed'
 
