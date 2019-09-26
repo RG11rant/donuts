@@ -393,8 +393,7 @@ class Pos(Widget):
         info = messages()
         bill_it = self.total
 
-        if 1000 > self.m > 3:
-            print('test1')
+        if 100 > self.m > 3:
             if info is not None:
                 paying = info.strip('$')
                 paying = int(paying) - 100
@@ -412,12 +411,13 @@ class Pos(Widget):
                     change += str(abs(paying))
                     self.ids.changes_name.pos = 800, 200
                     info = 'Payed'
+                    self.m = 99
 
                 self.ids.payed.text = info
                 self.ids.bill.text = total_s
                 self.ids.changes.text = change
 
-        elif self.m > 1001:
+        elif self.m > 100:
             self.payed()
             Clock.unschedule(self.update)
 
@@ -468,6 +468,8 @@ class Pos(Widget):
         self.pop_index = 0
         self.drink_num = 1000
         self.clear_it()
+        if running_on == 'pie':
+            un_start()
         App.get_running_app().stop()
         self.ids.star.pos = 550, 150
 

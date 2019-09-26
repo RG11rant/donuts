@@ -18,7 +18,7 @@ else:
     host = '192.168.86.26'
     # host = '127.0.0.1'  # get local machine name
     pos = '192.168.86.26'
-    bot = '192.168.86.177'
+    bot = '192.168.86.179'
     win1 = '192.168.86.26'
     win2 = '192.168.86.11'
     conn = sqlite3.connect('order.db')
@@ -61,7 +61,7 @@ def log_it(note):
     st = datetime.datetime.fromtimestamp(ts).strftime('%d-%m-%Y %H:%M:%S')
     info = st + ' > '
     info += note
-    info += '\n'
+    info += '\n\r'
     f.write(info)
 
 
@@ -179,6 +179,7 @@ while True:
                     message['data'] = data.encode("utf-8")
                     send_to_w1 = True
 
+                # cash info from Arduino
                 if data[0] == '$':
                     message2_header = '{:10}'.format(len(data))
                     message['header'] = message2_header.encode("utf-8")
