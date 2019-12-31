@@ -18,7 +18,7 @@ else:
     host = '192.168.86.26'
     # host = '127.0.0.1'  # get local machine name
     pos = '192.168.86.26'
-    bot = '192.168.86.179'
+    bot = '192.168.86.178'
     win1 = '192.168.86.26'
     win2 = '192.168.86.11'
     conn = sqlite3.connect('order.db')
@@ -50,6 +50,14 @@ print('Listening for connections on {}:{}...'.format(host, port))
 sizes = ['None', 'donut', 'donuts']
 drinks = ['None', 'Pepsi', 'Mountain Dew', 'Root Beer', '7 Up', 'coffee', 'decaff']
 x = 0
+
+
+def un_start():
+    command = "/usr/bin/sudo /sbin/shutdown -r now"
+    import subprocess
+    process = subprocess.Popen(command.split(), stdout=subprocess.PIPE)
+    output = process.communicate()[0]
+    print(output)
 
 
 def log_it(note):
@@ -167,6 +175,7 @@ while True:
 
             #  main com arduino
             if user["data"] == 'm1'.encode("utf-8"):
+                # start the order
                 if data == 'A order In':
                     message2_header = '{:10}'.format(len(data))
                     message['header'] = message2_header.encode("utf-8")
@@ -199,6 +208,8 @@ while True:
             # window A data and processing
             if user["data"] == 'w1'.encode("utf-8"):
                 if len(data) == 4:
+                    if data == '0000':
+                        un_start()
                     message2 = order_process(data)
                     bot_hold = message2
                     message2_header = '{:10}'.format(len(message2))
