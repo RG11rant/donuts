@@ -2,6 +2,8 @@
   <dictionary name="Rob">
     <words>
       <w>arduino</w>
+      <w>endfor</w>
+      <w>endwith</w>
       <w>headersize</w>
       <w>numback</w>
       <w>startover</w>

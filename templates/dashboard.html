@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Donuts</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="refresh" content="5">
+	<link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
+	<link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <script type="text/javascript">
+        function PlaySound(soundObj) {
+        var sound = document.getElementById(soundObj);
+        if (sound)
+            sound.Play();
+        }
+    </script>
+
+</head>
+<body>
+<embed src="{{ url_for('static', filename='sound/beep.wav') }}"
+       autostart="false" width="0" height="0" id="beep" enablejavascript="true">
+<div class="container" style="min-height:100% width:80%">
+	{% with messages = get_flashed_messages() %}
+	  {% if messages %}
+	    {% for message in messages %}
+		  <div class="alert alert-warning alert-dismissible" role="alert">
+		  <button type="button" class="close" data-dismiss="alert"
+                  aria-label="Close"><span aria-hidden="true">×</span></button>
+			{{message}}
+		  </div>
+		{% endfor %}
+	  {% endif %}
+	{% endwith %}
+</div>
+<div class="card" style="width: 20rem;">
+  <div class="card-body">
+    <h5 class="card-title">New Order</h5>
+    <p class="card-text">Start an order from scratch.</p>
+    <a href="#" class="btn btn-primary">Add an order</a>
+  </div>
+</div>
+<div class="card" style="width: 20rem;">
+  <div class="card-body">
+    <h5 class="card-title">Edit an Order</h5>
+    <p class="card-text">Edit an order from the order number from the customer.</p>
+    <a href="#" class="btn btn-primary">Edit an order</a>
+  </div>
+</div>
+<div class="card" style="width: 20rem;">
+  <div class="card-body">
+    <h5 class="card-title">Delete an Order</h5>
+    <p class="card-text">Delete an order from the order number from the customer.</p>
+    <a href=""; class="btn btn-primary">Delete an order</a>
+  </div>
+</div>
+
+</body>
+</html>
