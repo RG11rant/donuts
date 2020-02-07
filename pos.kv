@@ -5,7 +5,7 @@
         Rectangle:
             pos: self.pos
             size: self.size
-            source: 'images/background.png'
+            source: 'images/background2.png'
 
     Label:
         text: "Your Order :"
@@ -123,6 +123,7 @@
         valign: 'middle'
         color: 1, 1, 1, 1
         pos: 350, 400
+
 
     Label:
         text: "Total:"
@@ -352,3 +353,62 @@
         pos: 550, 3000
         size: 150, 150
         on_press: root.next()
+
+    Button:
+        id: rob_stop
+        background_normal: 'images/estop.png'
+        background_down: 'images/estop.png'
+        pos: 1130, 0
+        size: 150, 150
+        on_press: root.done()
+
+    Button:
+        id: paid
+        text: 'pay It!'
+        pos: 500, 3000
+        size: 150, 150
+        on_press: root.payed()
+
+    Label:
+        id: donut_price1
+        text: "4.76 plus GST"
+        font_name: 'images/DK Cool Crayon.ttf'
+        font_size: 30
+        text_size: (150, None)
+        halign: 'center'
+        valign: 'middle'
+        color: 0, 0, 0, 1
+        pos: 5550, 100
+
+    Label:
+        id: donut_price2
+        text: "9.52 plus GST"
+        font_name: 'images/DK Cool Crayon.ttf'
+        font_size: 30
+        text_size: (150, None)
+        halign: 'center'
+        valign: 'middle'
+        color: 0, 0, 0, 1
+        pos: 5550, 200
+
+    Label:
+        id: donut_price3
+        text: "14.28 plus GST"
+        font_name: 'images/DK Cool Crayon.ttf'
+        font_size: 30
+        text_size: (200, None)
+        halign: 'center'
+        valign: 'middle'
+        color: 0, 0, 0, 1
+        pos: 5550, 300
+
+    Label:
+        id: donut_price4
+        text: "19.04 plus GST"
+        font_name: 'images/DK Cool Crayon.ttf'
+        font_size: 30
+        text_size: (200, None)
+        halign: 'center'
+        valign: 'middle'
+        color: 0, 0, 0, 1
+        pos: 5550, 400

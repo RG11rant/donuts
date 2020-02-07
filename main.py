@@ -239,6 +239,10 @@ class Pos(Widget):
         self.ids.pop_price3.text = ''
         self.ids.pops4.text = ''
         self.ids.pop_price4.text = ''
+        self.ids.donut_price1.pos = 5500, 470
+        self.ids.donut_price2.pos = 5500, 470
+        self.ids.donut_price3.pos = 5500, 470
+        self.ids.donut_price4.pos = 5500, 470
         self.ids.soup4.pos = 5500, 470
         self.ids.soup1.pos = 5500, 320
         self.ids.soup2.pos = 5500, 170
@@ -259,6 +263,10 @@ class Pos(Widget):
         self.ids.soup2.pos = 900, 360
         self.ids.soup3.pos = 500, 20
         self.ids.soup4.pos = 900, 20
+        self.ids.donut_price1.pos = 600, 400
+        self.ids.donut_price2.pos = 1000, 400
+        self.ids.donut_price3.pos = 600, 80
+        self.ids.donut_price4.pos = 1000, 80
         self.ids.new.pos = 40, -10
         self.ids.drink.pos = 200, -10
         if self.click:
@@ -286,6 +294,10 @@ class Pos(Widget):
             self.cash += 19.04
 
         self.num[0] = int(x)
+        self.ids.donut_price1.pos = 5500, 470
+        self.ids.donut_price2.pos = 5500, 470
+        self.ids.donut_price3.pos = 5500, 470
+        self.ids.donut_price4.pos = 5500, 470
         self.ids.soup4.pos = 5500, 470
         self.ids.soup1.pos = 5500, 320
         self.ids.soup2.pos = 5500, 170
@@ -384,6 +396,7 @@ class Pos(Widget):
         self.ids.payed.pos = 1000, 500
         self.ids.payed_name.pos = 700, 500
         self.ids.changes.pos = 800, 100
+        self.ids.paid.pos = 700, 10
         sub = '$' + str(self.total)
         self.ids.payed.text = sub
         Clock.schedule_interval(self.update, 1)
@@ -422,6 +435,7 @@ class Pos(Widget):
             Clock.unschedule(self.update)
 
     def payed(self):
+        Clock.unschedule(self.update)
         self.ids.bill.pos = 7000, 500
         self.ids.bill_name.pos = 8000, 400
         self.ids.payed.pos = 7000, 500
@@ -429,6 +443,7 @@ class Pos(Widget):
         self.ids.changes.pos = 7000, 500
         self.ids.changes_name.pos = 8000, 200
         self.ids.new.pos = 900, 3000
+        self.ids.paid.pos = 700, 3000
         self.num[4] = 1
         self.order.append(self.num)
         self.drink_num = 1000
@@ -468,10 +483,16 @@ class Pos(Widget):
         self.pop_index = 0
         self.drink_num = 1000
         self.clear_it()
+        # if running_on == 'pie':
+        #    un_start()
+        # App.get_running_app().stop()
+        self.ids.star.pos = 550, 150
+
+    def done(self):
+        self.pop_index = 0
         if running_on == 'pie':
             un_start()
         App.get_running_app().stop()
-        self.ids.star.pos = 550, 150
 
 
 create_table()

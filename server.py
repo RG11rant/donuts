@@ -1,4 +1,5 @@
 import socket
+import serial
 import sqlite3
 import select
 import time
@@ -24,6 +25,7 @@ else:
     conn = sqlite3.connect('order.db')
 
 port = 12345
+robot = serial.Serial('COM7', 115200)
 
 c = conn.cursor()
 
@@ -46,10 +48,6 @@ sockets_list = [serverSocket]
 clients = {}
 
 print('Listening for connections on {}:{}...'.format(host, port))
-
-sizes = ['None', 'donut', 'donuts']
-drinks = ['None', 'Pepsi', 'Mountain Dew', 'Root Beer', '7 Up', 'coffee', 'decaff']
-x = 0
 
 
 def un_start():
@@ -174,6 +172,10 @@ while True:
                 log_it('Received message from {}: {}'.format(user["data"].decode("utf-8"), data))
 
             #  main com arduino
+            if robot.in_waiting > 0:
+                line = robot.readline()
+                print(line)
+
             if user["data"] == 'm1'.encode("utf-8"):
                 # start the order
                 if data == 'A order In':
@@ -201,9 +203,11 @@ while True:
 
             # pos info
             if user["data"] == 'pos'.encode("utf-8"):
+                # change to serial com
                 print(data)
                 bot_data = data
                 send_to_bot = True
+                # end change
 
             # window A data and processing
             if user["data"] == 'w1'.encode("utf-8"):
