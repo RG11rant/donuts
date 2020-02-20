@@ -1,17 +1,13 @@
-import errno
-import sys
 import rpyc
 from kivy.app import App
 from kivy.core.window import Window
 from kivy.uix.widget import Widget
-from kivy.clock import Clock
 from kivy.core.audio import SoundLoader
-import socket
-import time
+
 
 Window.size = (480, 800)
 
-client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
 # host = '127.0.0.1'  # get local machine name
 host = '192.168.86.26'
 # host = '192.168.1.10'
@@ -21,29 +17,8 @@ HEADER_LENGTH = 10
 window_id = "w1"
 not_online = True
 
-while not_online:
-    try:
-        client_socket.connect((host, port))
-        client_socket.setblocking(True)
-
-        username = window_id.encode('utf-8')
-        username_header = '{:10}'.format(len(username)).encode('utf-8')
-        client_socket.send(username_header + username)
-        print("connected")
-        not_online = False
-    except Exception as e:
-        print(e)
-        time.sleep(5)
-
 sizes = ['None', 'donut', 'donuts']
 drinks = ['None', 'Pepsi', 'Mountain Dew', 'Root Beer', '7 Up', 'coffee', 'decaff']
-
-
-def robot(data):
-
-    message = data.encode('utf-8')
-    message_header = '{:10}'.format(len(message)).encode('utf-8')
-    client_socket.send(message_header + message)
 
 
 def un_start():
@@ -52,36 +27,6 @@ def un_start():
     process = subprocess.Popen(command.split(), stdout=subprocess.PIPE)
     output = process.communicate()[0]
     print(output)
-
-
-def messages():
-    try:
-        window_header = client_socket.recv(HEADER_LENGTH)
-        if not len(window_header):
-            print('Connection closed by the server')
-            sys.exit()
-
-        username_length = int(username_header.decode('utf-8').strip())
-        username1 = client_socket.recv(username_length).decode('utf-8')
-        if username1 == 'r':
-            print(username1)
-
-        message_header = client_socket.recv(HEADER_LENGTH)
-        if username1 == 'r':
-            print(message_header)
-        message_length = int(message_header.decode('utf-8').strip())
-        message = client_socket.recv(message_length).decode('utf-8')
-        return message
-
-    except IOError as et:
-        if et.errno != errno.EAGAIN and et.errno != errno.EWOULDBLOCK:
-            print('Reading error: {}'.format(str(et)))
-            # sys.exit()
-
-    except Exception as em:
-        # Any other exception - something happened, exit
-        print('Reading error: '.format(str(em)))
-        # sys.exit()
 
 
 class Pick(Widget):
@@ -95,6 +40,7 @@ class Pick(Widget):
         self.pops = ''
         self.data2 = ''
         self.click = SoundLoader.load('click.wav')
+        self.bot = rpyc.connect(host, port=12345)
 
     def order(self, num):
 
@@ -109,10 +55,9 @@ class Pick(Widget):
 
         if len(self.numberT) >= 4:
             test1 = self.numberT
-            bill = rpyc.connect('192.168.86.26', port=12345)
-            robot(test1)
-            time.sleep(1)
-            test = messages()
+            test = self.bot.root.order(self.numberT)
+            # test = orders(test1)
+
             if test1 == '0000':
                 un_start()
                 App.get_running_app().stop()
@@ -126,7 +71,6 @@ class Pick(Widget):
 
     def end_it(self):
         print(self.nums)
-        client_socket.close()
         App.get_running_app().stop()
 
     def clear_num(self):
@@ -278,19 +222,13 @@ class Pick(Widget):
         self.ids.orderT.pos = 175, 1200
         self.ids.star.pos = 180, -3000
         self.ids.orderS.pos = 175, 600
-        Clock.schedule_interval(self.update, 1)
-        robot('start')
-        print('yes')
-
-    def update(self, _):
-        robot('ready')
-        time.sleep(1)
-        info = messages()
+        # Clock.schedule_interval(self.update, 1)
+        print(self.numberT)
+        info = self.bot.root.robot(self.numberT)
         print(info)
         if info == 'started':
             self.ids.orderS.text = 'Started.'
         if info == 'end':
-            Clock.unschedule(self.update)
             self.reset_all()
 
 

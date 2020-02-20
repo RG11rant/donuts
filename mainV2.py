@@ -1,10 +1,8 @@
 import sqlite3
-import socket
 import time
 import random
 import math
-import errno
-import sys
+import rpyc
 import datetime
 from escpos.printer import Network
 from kivy.app import App
@@ -24,24 +22,7 @@ else:
     Window.size = (1280, 768)
     conn = sqlite3.connect('order.db')
 
-client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
 port = 12345
-window_id = "pos"
-
-HEADER_LENGTH = 10
-
-try:
-    print('starting host.')
-    client_socket.connect((host, port))  # uncomment on raspberry pi
-    client_socket.setblocking(True)
-
-    username = window_id.encode('utf-8')
-    username_header = '{:10}'.format(len(username)).encode('utf-8')
-    client_socket.send(username_header + username)
-    print("connected")
-except Exception as e:
-    print(e)
 
 c = conn.cursor()
 
@@ -68,45 +49,6 @@ def data_test():
             return a1
         else:
             print('looking....')
-
-
-def donut_que(data):
-    try:
-        message = data.encode('utf-8')
-        message_header = '{:10}'.format(len(message)).encode('utf-8')
-        client_socket.send(message_header + message)
-    except Exception as ex:
-        print(ex)
-    time.sleep(1)
-
-
-def messages():
-    try:
-        window_header = client_socket.recv(HEADER_LENGTH)
-        if not len(window_header):
-            print('Connection closed by the server')
-            sys.exit()
-
-        username_length = int(username_header.decode('utf-8').strip())
-        username1 = client_socket.recv(username_length).decode('utf-8')
-        if username1 == 'me':
-            print(username1)
-        message_header = client_socket.recv(10)
-        print(message_header)
-        message_length = int(message_header.decode('utf-8').strip())
-        message = client_socket.recv(message_length).decode('utf-8')
-        print(message)
-        return message
-
-    except IOError as et:
-        if et.errno != errno.EAGAIN and et.errno != errno.EWOULDBLOCK:
-            print('Reading error: {}'.format(str(et)))
-            sys.exit()
-
-    except Exception as em:
-        # Any other exception - something happened, exit
-        print('Reading error: '.format(str(em)))
-        # sys.exit()
 
 
 def un_start():
@@ -210,6 +152,7 @@ class Pos(Widget):
 
     def __init__(self, **kwargs):
         super(Pos, self).__init__(**kwargs)
+        self.bot = rpyc.connect(host, port=12345)
         self.cash = 0.00
         self.gst = 0.00
         self.total = 0.00
@@ -405,15 +348,14 @@ class Pos(Widget):
         self.ids.payed.text = sub
         self.ids.bill.text = '0.00'
         self.ids.changes.text = ''
-        Clock.schedule_interval(self.update, 3)
+        Clock.schedule_interval(self.update, 1)
 
     def update(self, _):
-        donut_que(self.money)
         self.m += 1
         bill_it = self.total
-        info = messages()
+        info = self.bot.root.pay(self.money)
         print(info)
-        if 900 > self.m > 3:
+        if 900 > self.m:
             if info is not None:
                 if info[0] == '$':
                     paying = info.strip('$')
@@ -432,14 +374,15 @@ class Pos(Widget):
                         change += str(abs(paying))
                         self.ids.changes_name.pos = 800, 200
                         info = 'Payed'
-                        self.m = 890
+                        self.m = 899
 
                     self.ids.payed.text = info
                     self.ids.bill.text = total_s
                     self.ids.changes.text = change
 
         elif self.m > 900:
-            donut_que('F')
+            info = self.bot.root.pay('F')
+            print(info)
             self.payed()
             Clock.unschedule(self.update)
 
@@ -474,8 +417,8 @@ class Pos(Widget):
         print(m)
         if running_on == 'pie':
             pos_print(self.order)
-
-        donut_que(str(m))
+        info = self.bot.root.pay(str(m))
+        print(info)
         self.pop_name = [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ']
         self.num = [0, 0, 0, 0, 0]
         self.pop_index = 0

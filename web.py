@@ -1,10 +1,10 @@
-from flask import Flask, render_template, flash, request, url_for, redirect, session
+from flask import Flask, render_template, flash, request, url_for, redirect  # , session
 import socket
 import time
 
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-host = '192.168.86.26'
-# host = '192.168.1.10'
+# host = '192.168.86.26'
+host = '192.168.1.10'
 port = 12345
 
 HEADER_LENGTH = 10
@@ -57,8 +57,8 @@ def index():
 
         return render_template("index.html", error=error)
 
-    except Exception as e:
-        flash(e)
+    except Exception as exp:
+        flash(exp)
         return render_template("index.html", error=error)
 
 

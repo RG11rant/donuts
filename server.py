@@ -11,21 +11,19 @@ running_on_pie = False  # pie or windows
 if running_on_pie:
     host = '192.168.1.10'
     pos = '192.168.1.10'
-    bot = '192.168.1.20'
     win1 = '192.168.1.11'
     win2 = '192.168.1.12'
     conn = sqlite3.connect('/home/sysop/pos/order.db')
+    robot = serial.Serial('/dev/ttyUSB0', 19200)
 else:
     host = '192.168.86.26'
-    # host = '127.0.0.1'  # get local machine name
     pos = '192.168.86.26'
-    bot = '192.168.86.178'
     win1 = '192.168.86.26'
     win2 = '192.168.86.11'
     conn = sqlite3.connect('order.db')
+    robot = serial.Serial('COM9', 19200)
 
 port = 12345
-robot = serial.Serial('COM7', 115200)
 
 c = conn.cursor()
 
@@ -36,6 +34,7 @@ send_to_pos = False
 
 bot_data = ''
 bot_hold = ''
+old_data = ''
 
 serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 serverSocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -90,7 +89,6 @@ def data_delete(a1):
 
 # Handles message receiving
 def receive_message(client_socket1):
-
     try:
         message_header = client_socket1.recv(HEADERSIZE)
         if not len(message_header):
@@ -125,9 +123,7 @@ def order_process(order):
 
 create_table()
 
-
 while True:
-
     read_sockets, _, exception_sockets = select.select(sockets_list, [], sockets_list)
     for notified_socket in read_sockets:
         if notified_socket == serverSocket:
@@ -167,14 +163,12 @@ while True:
             # Get user by notified socket, so we will know who sent the message
             user = clients[notified_socket]
             data = message["data"].decode("utf-8")
+            line = ''
             if data != 'ready':
-                print('Received message from {}: {}'.format(user["data"].decode("utf-8"), data))
-                log_it('Received message from {}: {}'.format(user["data"].decode("utf-8"), data))
-
-            #  main com arduino
-            if robot.in_waiting > 0:
-                line = robot.readline()
-                print(line)
+                if data != old_data:
+                    print('Received message from {}: {}'.format(user["data"].decode("utf-8"), data))
+                    log_it('Received message from {}: {}'.format(user["data"].decode("utf-8"), data))
+                    old_data = data
 
             if user["data"] == 'm1'.encode("utf-8"):
                 # start the order
@@ -184,30 +178,19 @@ while True:
                     message['data'] = data.encode("utf-8")
                     send_to_w1 = True
 
-                if data == 'end':
-                    message2_header = '{:10}'.format(len(data))
-                    message['header'] = message2_header.encode("utf-8")
-                    message['data'] = data.encode("utf-8")
-                    send_to_w1 = True
-
-                # cash info from Arduino
-                if data[0] == '$':
-                    message2_header = '{:10}'.format(len(data))
-                    message['header'] = message2_header.encode("utf-8")
-                    message['data'] = data.encode("utf-8")
-                    send_to_pos = True
-
-                if data == 'ready':
-                    bot_data = 'G'
-                    send_to_bot = True
-
             # pos info
             if user["data"] == 'pos'.encode("utf-8"):
-                # change to serial com
-                print(data)
-                bot_data = data
-                send_to_bot = True
-                # end change
+                robot.write(data.encode("utf-8"))
+                time.sleep(1)
+                line_in = robot.readline()
+                line = line_in.decode("utf-8")
+                line = line.rstrip()
+                if line[0] == '$':
+                    message2_header = '{:10}'.format(len(line))
+                    message['header'] = message2_header.encode("utf-8")
+                    message['data'] = line.encode("utf-8")
+                    print(line.encode("utf-8"))
+                    send_to_pos = True
 
             # window A data and processing
             if user["data"] == 'w1'.encode("utf-8"):
@@ -216,6 +199,7 @@ while True:
                         un_start()
                     message2 = order_process(data)
                     bot_hold = message2
+                    time.sleep(1)
                     message2_header = '{:10}'.format(len(message2))
                     message['header'] = message2_header.encode("utf-8")
                     message['data'] = message2.encode("utf-8")
@@ -223,14 +207,35 @@ while True:
 
                 if len(data) == 5:
                     if data == 'start':
-                        data = 'end'
-                        message2_header = '{:10}'.format(len(data))
+                        robot.write(bot_hold.encode("utf-8"))
+                        time.sleep(1)
+                    if data == 'ready':
+                        line_in = robot.readline()
+                        line = line_in.decode("utf-8")
+                        line = line.rstrip()
+                        #  if line == 'end':
+                        message2_header = '{:10}'.format(len(line))
                         message['header'] = message2_header.encode("utf-8")
-                        message['data'] = data.encode("utf-8")
-                        print(bot_data)
-                        send_to_bot = True
-                        bot_data = bot_hold
-                        # send_to_w1 = True
+                        message['data'] = line.encode("utf-8")
+                        send_to_w1 = True
+                        #  main com arduino
+            # if robot.in_waiting > 0:
+            #     line_in = robot.readline()
+            #     line = line_in.decode("utf-8")
+            #     line = line.rstrip()
+            #
+            # if len(line) > 1:
+            #
+            #     if line == 'end' and user["data"] == 'w1'.encode("utf-8"):
+            #         message2_header = '{:10}'.format(len(line))
+            #         message['header'] = message2_header.encode("utf-8")
+            #         message['data'] = line.encode("utf-8")
+            #         send_to_w1 = True
+            #     if line[0] == '$' and user["data"] == 'pos'.encode("utf-8"):
+            #         message2_header = '{:10}'.format(len(line))
+            #         message['header'] = message2_header.encode("utf-8")
+            #         message['data'] = line.encode("utf-8")
+            #         send_to_pos = True
 
             # Iterate over connected clients and broadcast message
             for client_socket in clients:
@@ -239,23 +244,22 @@ while True:
 
                 if the_ip == win1 and send_to_w1:
                     client_socket.send(user['header'] + user['data'] + message['header'] + message['data'])
+                    print(user['header'] + user['data'] + message['header'] + message['data'])
                     send_to_w1 = False
 
                 if the_ip == win2 and send_to_w2:
                     client_socket.send(user['header'] + user['data'] + message['header'] + message['data'])
                     send_to_w2 = False
 
-                if the_ip == bot and send_to_bot:
-                    client_socket.send(bot_data.encode("utf-8"))
-                    send_to_bot = False
-
                 if the_ip == pos and send_to_pos:
                     client_socket.send(user['header'] + user['data'] + message['header'] + message['data'])
+                    print(user['header'] + user['data'] + message['header'] + message['data'])
                     send_to_pos = False
+
+            line = ''
 
     # It's not really necessary to have this, but will handle some socket exceptions just in case
     for notified_socket in exception_sockets:
-
         # Remove from list for socket.socket()
         sockets_list.remove(notified_socket)
 
