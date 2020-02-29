@@ -5,14 +5,14 @@ import time
 import datetime
 import serial
 
-running_on_pie = False  # pie or windows
+running_on_pie = False   # pie or windows
 
 if running_on_pie:
     conn = sqlite3.connect('/home/sysop/pos/order.db', check_same_thread=False)
-    robot = serial.Serial('/dev/ttyUSB0', 19200)
+    robot = serial.Serial('/dev/ttyUSB0', 19200, timeout=None)
 else:
     conn = sqlite3.connect('order.db', check_same_thread=False)
-    robot = serial.Serial('COM9', 19200)
+    robot = serial.Serial('COM9', 19200, timeout=None)
 
 c = conn.cursor()
 
@@ -64,11 +64,11 @@ class ServerHead(rpyc.Service):
     def __init__(self, **kwargs):
         super(ServerHead, self).__init__(**kwargs)
         self.bill = False
+        self.phil = False  # remove
         self.last = ''
         self.onbord = 0
 
     def on_connect(self, connects):
-        print(connects)
         self.onbord += 1
         print("connected")
 
@@ -84,16 +84,20 @@ class ServerHead(rpyc.Service):
 
     def exposed_robot(self, bot):
         while self.bill:
-            pass
+            time.sleep(.5)
+        self.bill = True
         robot.write(bot.encode("utf-8"))
         line_in = robot.readline()
         line = line_in.decode("utf-8")
         line = line.rstrip()
         log_it(line)
         print(line)
+        self.bill = False
         return line
 
     def exposed_pay(self, bot):
+        while self.bill:
+            time.sleep(.25)
         self.bill = True
         robot.write(bot.encode("utf-8"))
         line_in = robot.readline()
@@ -106,7 +110,20 @@ class ServerHead(rpyc.Service):
         self.bill = False
         return line
 
+    def exposed_card(self):
+        while self.phil:
+            time.sleep(.25)
+        self.bill = True
+        sender = 'C#'
+        robot.write(sender.encode("utf-8"))
+        line_in = robot.readline()
+        line = line_in.decode("utf-8")
+        line = line.rstrip()
+        self.bill = False
+        return line
+
 
 if __name__ == '__main__':
     t = ThreadedServer(ServerHead, port=12345)
+    print(t.host)
     t.start()

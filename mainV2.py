@@ -11,12 +11,13 @@ from kivy.core.window import Window
 from kivy.uix.widget import Widget
 from kivy.clock import Clock
 
+running_on_pie = True  # pie or windows
 
-running_on = 'pi'  # pie or windows
 
-if running_on == 'pie':
-    host = '192.168.1.10'
+if running_on_pie:
+    host = '0.0.0.0'
     conn = sqlite3.connect('/home/sysop/pos/order.db')
+
 else:
     host = '192.168.86.26'
     Window.size = (1280, 768)
@@ -32,6 +33,8 @@ drinks = ['None', 'Pepsi', 'Mountain Dew', 'Root Beer', '7 Up', 'coffee', 'decaf
 def create_table():
     c.execute('CREATE TABLE IF NOT EXISTS donut(donutID int, drink int, topping int, orderNUM int,'
               ' pay int, Timestamp DATETIME DEFAULT CURRENT_TIMESTAMP)')
+    c.execute('CREATE TABLE IF NOT EXISTS cards(pass int, name VARCHAR(255), last VARCHAR(255), '
+              ' Timestamp DATETIME DEFAULT CURRENT_TIMESTAMP)')
 
 
 def data_entry(a1, b1, c1, d1, e1):
@@ -49,6 +52,13 @@ def data_test():
             return a1
         else:
             print('looking....')
+
+
+def find_card(a1):
+    c.execute("SELECT * FROM cards WHERE name=:a1", {"a1": str(a1)})
+    data1 = c.fetchall()
+    if data1:
+        return data1
 
 
 def un_start():
@@ -162,10 +172,11 @@ class Pos(Widget):
         self.m = 0
         self.money = "0"
         self.call_me = 0
+        self.complete = False
         self.pop_name = [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ']
         self.num = [0, 0, 0, 0, 0]
         self.order = []
-        if running_on == 'pie':
+        if running_on_pie:
             self.click = SoundLoader.load('/home/sysop/pos/sound/blip.wav')
         else:
             self.click = SoundLoader.load('sound/blip.wav')
@@ -337,57 +348,68 @@ class Pos(Widget):
         bills += str(self.total * 4)
         bills += '#'
         self.money = bills
-        # donut_que(bills)
         self.ids.bill.pos = 800, 300
         self.ids.bill_name.pos = 800, 400
         self.ids.payed.pos = 1000, 500
         self.ids.payed_name.pos = 700, 500
         self.ids.changes.pos = 800, 100
         self.ids.paid.pos = 1000, 0
-        sub = '$' + str(self.total)
+        cash = format(self.total, '.2f')
+        sub = '$' + str(cash)
         self.ids.payed.text = sub
-        self.ids.bill.text = '0.00'
+        self.ids.bill.text = '$0.00'
         self.ids.changes.text = ''
         Clock.schedule_interval(self.update, 1)
 
     def update(self, _):
         self.m += 1
-        bill_it = self.total
-        info = self.bot.root.pay(self.money)
-        print(info)
-        if 900 > self.m:
+        if 1800 > self.m:
+            info = self.bot.root.pay(self.money)
             if info is not None:
                 if info[0] == '$':
                     paying = info.strip('$')
                     paying = int(paying)
                     paying = paying / 4
-                    total = bill_it - paying
+                    total = self.total - paying
                     total_s = '$'
+                    total = format(total, '.2f')
                     total_s += str(total)
                     if paying > 0:
-                        info = '$'
-                        info += str(paying)
+                        cash = '$'
+                        paying = format(paying, '.2f')
+                        cash += str(paying)
                         change = ' '
 
                     else:
                         change = '$'
-                        change += str(abs(paying))
+                        paying = abs(paying)
+                        if paying > 0:
+                            print('change')
+                        paying = format(paying, '.2f')
+                        change += str(paying)
                         self.ids.changes_name.pos = 800, 200
-                        info = 'Payed'
-                        self.m = 899
+                        cash = 'Payed'
+                        self.complete = True
+                        self.m = 1801
 
-                    self.ids.payed.text = info
+                    self.ids.payed.text = cash
                     self.ids.bill.text = total_s
                     self.ids.changes.text = change
+                card = self.bot.root.card()
+                if len(card) > 2:
+                    print(card)
+                    card_data = find_card(card)
+                    if card_data != 'None':
+                        print(card_data)
 
-        elif self.m > 900:
-            info = self.bot.root.pay('F')
-            print(info)
+        else:
             self.payed()
             Clock.unschedule(self.update)
 
     def payed(self):
         Clock.unschedule(self.update)
+        info = self.bot.root.pay('F')
+        print(info)
         self.ids.bill.pos = 7000, 500
         self.ids.bill_name.pos = 8000, 400
         self.ids.payed.pos = 7000, 500
@@ -415,7 +437,7 @@ class Pos(Widget):
             print(n)
         m += '#'
         print(m)
-        if running_on == 'pie':
+        if running_on_pie:
             pos_print(self.order)
         info = self.bot.root.pay(str(m))
         print(info)
@@ -442,9 +464,9 @@ class Pos(Widget):
 
     def done(self):
         self.pop_index = 0
-        if running_on == 'pie':
+        if running_on_pie:
             un_start()
-        App.get_running_app().stop()
+        # App.get_running_app().stop()
 
 
 create_table()

@@ -4,13 +4,15 @@ from kivy.core.window import Window
 from kivy.uix.widget import Widget
 from kivy.core.audio import SoundLoader
 
+running_on_pie = True  # pie or windows
 
 Window.size = (480, 800)
 
+if running_on_pie:
+    host = '192.168.1.10'
+else:
+    host = '192.168.86.26'
 
-# host = '127.0.0.1'  # get local machine name
-host = '192.168.86.26'
-# host = '192.168.1.10'
 port = 12345
 
 HEADER_LENGTH = 10
@@ -60,7 +62,7 @@ class Pick(Widget):
 
             if test1 == '0000':
                 un_start()
-                App.get_running_app().stop()
+                # App.get_running_app().stop()
             if test != 'None':
                 self.numberT = test
                 self.look_at()
