@@ -3,6 +3,7 @@ import time
 import random
 import math
 import rpyc
+import os
 import datetime
 from escpos.printer import Network
 from kivy.app import App
@@ -12,7 +13,6 @@ from kivy.uix.widget import Widget
 from kivy.clock import Clock
 
 running_on_pie = True  # pie or windows
-
 
 if running_on_pie:
     host = '0.0.0.0'
@@ -33,8 +33,8 @@ drinks = ['None', 'Pepsi', 'Mountain Dew', 'Root Beer', '7 Up', 'coffee', 'decaf
 def create_table():
     c.execute('CREATE TABLE IF NOT EXISTS donut(donutID int, drink int, topping int, orderNUM int,'
               ' pay int, Timestamp DATETIME DEFAULT CURRENT_TIMESTAMP)')
-    c.execute('CREATE TABLE IF NOT EXISTS cards(pass int, name VARCHAR(255), last VARCHAR(255), '
-              ' Timestamp DATETIME DEFAULT CURRENT_TIMESTAMP)')
+    c.execute('CREATE TABLE IF NOT EXISTS cards(pass int, name VARCHAR(255), last VARCHAR(255), donut int, '
+              ' Timestamp DATE)')
 
 
 def data_entry(a1, b1, c1, d1, e1):
@@ -54,19 +54,27 @@ def data_test():
             print('looking....')
 
 
-def find_card(a1):
-    c.execute("SELECT * FROM cards WHERE name=:a1", {"a1": str(a1)})
+def find_card(a1, b1):
+    c.execute("SELECT pass, donut, Timestamp FROM cards WHERE name=:a1 AND last=:b1", {"a1": str(a1), "b1": str(b1)})
     data1 = c.fetchall()
     if data1:
         return data1
 
 
+def add_card(a1, b1, c1, d1, e1):
+    c.execute("SELECT pass FROM cards WHERE name=:a1 AND last=:b1", {"a1": str(b1), "b1": str(c1)})
+    data1 = c.fetchall()
+    print(data1)
+    if not data1:
+        c.execute("INSERT INTO cards(pass, name, last, donut, Timestamp) VALUES(?, ?, ?, ?, ?)",
+                  (a1, b1, c1, d1, e1))
+        conn.commit()
+    else:
+        print("already entered")
+
+
 def un_start():
-    command = "/usr/bin/sudo /sbin/shutdown -r now"
-    import subprocess
-    process = subprocess.Popen(command.split(), stdout=subprocess.PIPE)
-    output = process.communicate()[0]
-    print(output)
+    os.system("sudo shutdown -h now")
 
 
 def pos_print(order=None):
@@ -169,8 +177,9 @@ class Pos(Widget):
         self.key_num = 0
         self.drink_num = 1000
         self.pop_index = 0
-        self.m = 0
+        self.m = False
         self.money = "0"
+        self.card_name = "R"
         self.call_me = 0
         self.complete = False
         self.pop_name = [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ']
@@ -210,6 +219,17 @@ class Pos(Widget):
         self.ids.pop3.pos = 900, 3000
         self.ids.pop4.pos = 1100, 3000
         self.ids.done.pos = 550, 3000
+        self.ids.pay.pos = 900, 3000
+        self.ids.new.pos = 900, 3000
+        self.ids.bill.pos = 7000, 500
+        self.ids.bill_name.pos = 8000, 400
+        self.ids.payed.pos = 7000, 500
+        self.ids.payed_name.pos = 7000, 500
+        self.ids.changes.pos = 7000, 500
+        self.ids.changes_name.pos = 8000, 200
+        self.ids.new.pos = 900, 3000
+        self.ids.paid.pos = 700, 3000
+        self.ids.user.pos = 800, 4000
 
     def set_num(self):
         self.key_num = data_test()
@@ -342,7 +362,7 @@ class Pos(Widget):
         self.ids.pay.pos = 550, 400
 
     def pay(self):
-        self.m = 1
+        self.m = True
         self.ids.pay.pos = 5500, 400
         bills = '%'
         bills += str(self.total * 4)
@@ -353,7 +373,6 @@ class Pos(Widget):
         self.ids.payed.pos = 1000, 500
         self.ids.payed_name.pos = 700, 500
         self.ids.changes.pos = 800, 100
-        self.ids.paid.pos = 1000, 0
         cash = format(self.total, '.2f')
         sub = '$' + str(cash)
         self.ids.payed.text = sub
@@ -362,8 +381,7 @@ class Pos(Widget):
         Clock.schedule_interval(self.update, 1)
 
     def update(self, _):
-        self.m += 1
-        if 1800 > self.m:
+        if self.m:
             info = self.bot.root.pay(self.money)
             if info is not None:
                 if info[0] == '$':
@@ -390,21 +408,70 @@ class Pos(Widget):
                         self.ids.changes_name.pos = 800, 200
                         cash = 'Payed'
                         self.complete = True
-                        self.m = 1801
+                        self.m = False
 
                     self.ids.payed.text = cash
                     self.ids.bill.text = total_s
                     self.ids.changes.text = change
                 card = self.bot.root.card()
                 if len(card) > 2:
-                    print(card)
-                    card_data = find_card(card)
+                    data = card.split(",")
+                    card_data = str(find_card(data[0], data[1]))
                     if card_data != 'None':
-                        print(card_data)
-
+                        ts = time.time()
+                        st = datetime.datetime.fromtimestamp(ts).strftime('%d-%m-%Y')
+                        card_data = card_data.strip('[]()')
+                        card_data = card_data.replace(" ", "")
+                        card_data = card_data.replace("'", "")
+                        card_data = card_data.split(",")
+                        if card_data[0] == '3389':
+                            self.card_name = data
+                            self.card()
+                        if card_data[0] == '666':
+                            self.m = False
+                            if card_data[2] == st:
+                                print(card_data[2])
         else:
             self.payed()
             Clock.unschedule(self.update)
+
+    def card(self):
+        Clock.unschedule(self.update)
+        self.ids.bill.pos = 7000, 500
+        self.ids.bill_name.pos = 8000, 400
+        self.ids.payed.pos = 7000, 500
+        self.ids.payed_name.pos = 7000, 500
+        self.ids.changes.pos = 7000, 500
+        self.ids.changes_name.pos = 8000, 200
+        self.ids.paid.pos = 500, 400
+        self.ids.user.pos = 800, 400
+
+    def add_user(self):
+        self.ids.payed.pos = 700, 500
+        card_data = str(self.card_name[0] + ' ' + self.card_name[1])
+        self.ids.payed.text = card_data
+        self.ids.paid.pos = 5000, 400
+        self.ids.user.pos = 5000, 800
+        Clock.schedule_interval(self.read_card, 1)
+
+    def read_card(self, _):
+        self.ids.add.pos = 500, 300
+        card = self.bot.root.card()
+        if len(card) > 2:
+            data = card.split(",")
+            self.card_name = data
+            card_data = str(data[0] + ' ' + data[1])
+            self.ids.payed.text = card_data
+            print(self.bot.root.pay('F'))
+            Clock.unschedule(self.read_card)
+
+    def add(self):
+        self.ids.payed.pos = 700, 5000
+        self.ids.add.pos = 300, 8000
+        ts = time.time()
+        st = datetime.datetime.fromtimestamp(ts).strftime('%d-%m-%Y')
+        add_card(666, self.card_name[0], self.card_name[1], 0, st)
+        self.card()
 
     def payed(self):
         Clock.unschedule(self.update)
@@ -418,6 +485,7 @@ class Pos(Widget):
         self.ids.changes_name.pos = 8000, 200
         self.ids.new.pos = 900, 3000
         self.ids.paid.pos = 700, 3000
+        self.ids.user.pos = 800, 4000
         self.num[4] = 1
         self.order.append(self.num)
         self.drink_num = 1000
@@ -448,25 +516,21 @@ class Pos(Widget):
         self.clear_it()
         self.ids.star.pos = 550, 150
 
-    def next(self):
-        self.ids.pay.pos = 900, 3000
-        self.ids.new.pos = 900, 3000
+    def restart(self):
         del self.order[:]
         self.num = [0, 0, 0, 0, 0]
         self.pop_name = [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ']
         self.pop_index = 0
         self.drink_num = 1000
         self.clear_it()
-        # if running_on == 'pie':
-        #    un_start()
-        # App.get_running_app().stop()
         self.ids.star.pos = 550, 150
 
     def done(self):
         self.pop_index = 0
         if running_on_pie:
-            un_start()
-        # App.get_running_app().stop()
+            print("stop")
+            # un_start()
+        App.get_running_app().stop()
 
 
 create_table()

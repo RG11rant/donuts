@@ -1,4 +1,5 @@
 import rpyc
+import os
 from kivy.app import App
 from kivy.core.window import Window
 from kivy.uix.widget import Widget
@@ -24,11 +25,7 @@ drinks = ['None', 'Pepsi', 'Mountain Dew', 'Root Beer', '7 Up', 'coffee', 'decaf
 
 
 def un_start():
-    command = "/usr/bin/sudo /sbin/shutdown -r now"
-    import subprocess
-    process = subprocess.Popen(command.split(), stdout=subprocess.PIPE)
-    output = process.communicate()[0]
-    print(output)
+    os.system("sudo shutdown -h now")
 
 
 class Pick(Widget):
