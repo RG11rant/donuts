@@ -12,7 +12,7 @@ if running_on_pie:
     robot = serial.Serial('/dev/ttyUSB0', 19200, timeout=None)
 else:
     conn = sqlite3.connect('order.db', check_same_thread=False)
-    robot = serial.Serial('COM9', 19200, timeout=None)
+    robot = serial.Serial('COM7', 19200, timeout=None)
 
 c = conn.cursor()
 

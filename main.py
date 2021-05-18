@@ -14,7 +14,7 @@ from kivy.uix.widget import Widget
 from kivy.clock import Clock
 
 
-running_on = 'pi'  # pie or windows
+running_on = 'pie'  # pie or windows
 
 if running_on == 'pie':
     host = '192.168.1.10'

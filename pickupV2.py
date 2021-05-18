@@ -14,15 +14,6 @@ if running_on_pie:
 else:
     host = '192.168.86.26'
 
-port = 12345
-
-HEADER_LENGTH = 10
-window_id = "w1"
-not_online = True
-
-sizes = ['None', 'donut', 'donuts']
-drinks = ['None', 'Pepsi', 'Mountain Dew', 'Root Beer', '7 Up', 'coffee', 'decaff']
-
 
 def un_start():
     os.system("sudo shutdown -h now")
@@ -53,17 +44,14 @@ class Pick(Widget):
     def enter_num(self):
 
         if len(self.numberT) >= 4:
-            test1 = self.numberT
             test = self.bot.root.order(self.numberT)
-            # test = orders(test1)
 
-            if test1 == '0000':
+            if self.numberT == '0000':
                 un_start()
                 # App.get_running_app().stop()
             if test != 'None':
                 self.numberT = test
                 self.look_at()
-
             else:
                 self.numberT = ''
                 self.ids.number1.text = 'XXXX'
@@ -144,7 +132,7 @@ class Pick(Widget):
             if self.pops[2] == '1':
                 self.ids.pop42.pos = 350, 200
         if len(self.pops) > 3:
-            # pop number 3
+            # pop number 4
             if self.pops[3] == '4':
                 self.ids.pop13.pos = 50, 200
             if self.pops[3] == '3':

@@ -12,14 +12,14 @@ from kivy.core.window import Window
 from kivy.uix.widget import Widget
 from kivy.clock import Clock
 
-running_on_pie = True  # pie or windows
+running_on_pie = False  # pie or windows
 
 if running_on_pie:
     host = '0.0.0.0'
     conn = sqlite3.connect('/home/sysop/pos/order.db')
 
 else:
-    host = '192.168.86.26'
+    host = '192.168.86.28'
     Window.size = (1280, 768)
     conn = sqlite3.connect('order.db')
 
@@ -180,7 +180,7 @@ class Pos(Widget):
         self.m = False
         self.money = "0"
         self.card_name = "R"
-        self.call_me = 0
+        self.count_down = 0
         self.complete = False
         self.pop_name = [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ']
         self.num = [0, 0, 0, 0, 0]
@@ -363,6 +363,7 @@ class Pos(Widget):
 
     def pay(self):
         self.m = True
+        self.count_down = 0
         self.ids.pay.pos = 5500, 400
         bills = '%'
         bills += str(self.total * 4)
@@ -381,6 +382,9 @@ class Pos(Widget):
         Clock.schedule_interval(self.update, 1)
 
     def update(self, _):
+        cash = ''
+        total_s = ''
+        change = ''
         if self.m:
             info = self.bot.root.pay(self.money)
             if info is not None:
@@ -410,9 +414,8 @@ class Pos(Widget):
                         self.complete = True
                         self.m = False
 
-                    self.ids.payed.text = cash
-                    self.ids.bill.text = total_s
-                    self.ids.changes.text = change
+                # card process
+                print(self.card_name)
                 card = self.bot.root.card()
                 if len(card) > 2:
                     data = card.split(",")
@@ -428,12 +431,21 @@ class Pos(Widget):
                             self.card_name = data
                             self.card()
                         if card_data[0] == '666':
+                            change = str(self.card_name[0] + ' ' + self.card_name[1])
                             self.m = False
                             if card_data[2] == st:
                                 print(card_data[2])
+                self.ids.payed.text = cash
+                self.ids.bill.text = total_s
+                self.ids.changes.text = change
         else:
-            self.payed()
-            Clock.unschedule(self.update)
+            self.ids.payed.text = cash
+            self.ids.bill.text = total_s
+            self.ids.changes.text = change
+            self.count_down += 1
+            if self.count_down > 3:
+                self.payed()
+                Clock.unschedule(self.update)
 
     def card(self):
         Clock.unschedule(self.update)
